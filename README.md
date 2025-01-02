@@ -52,12 +52,17 @@ Adapter는 Application 계층에 정의된 port를 구현합니다.
   - Pull Request를 생성할 때, 최소 2명의 reviewer를 지정해야 합니다.
   - 관리자(@merge-simpson, @silberbullet)는 리뷰 없이 병합이 가능합니다.
   - **코드에 대한 모든 논의(conversations)가 해결되지 않은 상태에서는 Pull Request를 병합할 수 없습니다.**
-    - 예시)
-      1. @silberbullet 님이 pull request 생성 후, reviewer를 @merge-simpson 에게 신청하였습니다.
-      2. @merge-simpson 님은 코드 수정을 위해 comment를 남겼습니다. 
-      3. @silberbullet 님은 해당 코드를 수정하여 push 후  @merge-simpson님이 남긴 comment에 수정사항을 적어놓았습니다.
-      4. @merge-simpson "Resolve conversation" 버튼을 클릭하여 피드백이 해결되었음을 표시합니다.
-      5. 비로서 @silberbullet 님은 코드 병합이 가능합니다.
+    <details>
+    <summary>conversations 예시 보기</summary>
+    
+    1. @silberbullet 님이 pull request 생성 후, reviewer를 @merge-simpson 에게 신청하였습니다.  
+    2. @merge-simpson 님은 코드 수정을 위해 comment를 남겼습니다.  
+    3. @silberbullet 님은 해당 코드를 수정하여 push 후 @merge-simpson님이 남긴 comment에 수정사항을 적어놓았습니다.  
+    4. @merge-simpson "Resolve conversation" 버튼을 클릭하여 피드백이 해결되었음을 표시합니다.  
+    5. 비로서 @silberbullet 님은 코드 병합이 가능합니다.  
+    
+    </details>
+
 
 # Basic Commit Message Type
 
