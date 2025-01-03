@@ -10,23 +10,23 @@
 - 폴더 구조의 시작점은 **높은 응집도를 위해** 도메인 기준으로 설계합니다. 
 
 ```
-me.nettee
-├── common
-└── board
-    ├── adapter                 -- 외부와의 상호작용을 처리하는 계층, application 입출력을 담당
-    │   ├── driving             -- 외부로부터의 입력을 처리하는 어댑터
-    │   │   └── web             -- Web 요청을 처리하는 컨트롤러 및 DTO 정의
-    │   │       ├── dto
-    │   │       └── mapper      -- DTO ↔ Domain 매핑 클래스
-    │   └── driven              -- 외부로의 출력을 처리하는 어댑터 (DB, Event, Messaging 처리)
-    │       └── persistence     -- 영속성 계층의 구현체 (예: JPA, MyBatis 등)
-    │           ├── entity
-    │           └── mapper      -- Entity ↔ Domain 매핑 클래스
-    └── application             -- 핵심 비즈니스 로직이 포함된 계층, 도메인과 유스케이스를 정의
-        ├── domain              -- 비즈니스 도메인 정의
-        ├── port                -- adpater와 상호작용을 위한 인터페이스 정의
-        ├── service             -- 비즈니스 로직을 처리하는 서비스 클래스
-        └── usecase             -- 특정 유스케이스(기능) 인터페이스 정의
+└─me.nettee
+  ├─board
+  │  ├─adapter              --  외부와의 상호작용을 처리하는 계층, application 입출력을 담당
+  │  │  ├─driving                  --  외부로부터의 입력을 처리하는 어댑터
+  │  │  │  ├─mapper             --  DTO <-> Domain 매핑 클래스
+  │  │  │  └─web                -- Web 요청을 처리하는 컨트롤러 및 DTO 정의
+  │  │  │      └─dto
+  │  │  └─driven                 --  외부로부터의 출력을 처리하는 어댑터 ( DB, Event, Message 처리 ) 
+  │  │      ├─mapper            --  Entity <-> Domain 매핑 클래스
+  │  │      └─persistence       -- 영속성 계층의 구현체 (예: JPA, MyBatis 등)
+  │  │          └─entity
+  │  └─application            -- 핵심 비즈니스 로직이 포함된 계층, 도메인과 유스케이스를 정의
+  │      ├─domain               -- 비즈니스 도메인 정의
+  │      ├─port                 -- adpater와 상호작용을 위한 인터페이스 정의
+  │      ├─service              -- 비즈니스 로직을 처리하는 서비스 클래스
+  │      └─usecase              -- 특정 유스케이스(기능) 인터페이스 정의
+  └─common
 ```
 
 Adapter는 Application 계층에 정의된 port를 구현합니다.  
