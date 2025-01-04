@@ -49,8 +49,8 @@ dependencies {
     // lombok
     compileOnly("org.projectlombok:lombok")
 
-    // jpa
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    // spring data commons
+    implementation("org.springframework.data:spring-data-commons")
 }
 
 kotlin{
