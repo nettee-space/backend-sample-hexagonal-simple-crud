@@ -1,0 +1,12 @@
+spring:
+  application.name: hexagonal
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DEMO_POSTGRESQL_URL}
+    username: ${DEMO_POSTGRESQL_USERNAME}
+    password: ${DEMO_POSTGRESQL_PASSWORD}
+
+  flyway:
+    baseline-on-migrate: true
+    locations:
+      - classpath:db/migration/v1_0
