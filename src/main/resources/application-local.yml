@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    # ${환경변수:가없으면그때의기본값}
+    url: ${DEMO_POSTGRESQL_URL:jdbc:postgresql://localhost:5433/demo}
+    username: ${DEMO_POSTGRESQL_USERNAME:root}
+    password: ${DEMO_POSTGRESQL_PASSWORD:root}
+
+logging:
+  level:
+    root: debug
