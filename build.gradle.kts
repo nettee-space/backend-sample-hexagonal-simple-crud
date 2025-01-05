@@ -36,6 +36,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // logging
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
@@ -48,6 +49,11 @@ dependencies {
 
     // lombok
     compileOnly("org.projectlombok:lombok")
+
+    // mapstruct
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
