@@ -1,6 +1,5 @@
 package me.nettee.board.application.port;
 
-
 import me.nettee.board.application.domain.Board;
 
 public interface BoardCommandPort {

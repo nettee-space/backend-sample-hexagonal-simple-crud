@@ -1,6 +1,5 @@
 package me.nettee.board.application.domain;
 
-
 import lombok.*;
 
 import java.time.Instant;
@@ -15,8 +14,6 @@ public class Board {
     private String title;
 
     private String content;
-
-    // TODO: 요구 사항에 따라 필드가 추가될 수 있습니다.
 
     private Instant deletedAt;
 
