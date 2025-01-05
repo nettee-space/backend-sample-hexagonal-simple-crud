@@ -1,9 +1,11 @@
 package me.nettee.board.application.domain;
 
-import java.util.Objects;
-import lombok.*;
-
 import java.time.Instant;
+import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
 
 @Getter
@@ -25,10 +27,6 @@ public class Board {
     private Instant updatedAt;
 
     private Instant deletedAt;
-
-    public BoardStatus status() {
-        return status;
-    }
 
     @Builder(
         builderClassName = "updateBoardBuilder",
