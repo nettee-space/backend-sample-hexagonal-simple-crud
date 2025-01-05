@@ -46,6 +46,9 @@ dependencies {
     // flyway
     implementation("org.flywaydb:flyway-database-postgresql")
 
+    // lombok
+    compileOnly("org.projectlombok:lombok")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -61,7 +64,6 @@ kotlin{
         }
     }
 }
-
 
 tasks.withType<Test> {
     useJUnitPlatform()
