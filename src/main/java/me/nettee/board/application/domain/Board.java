@@ -3,9 +3,9 @@ package me.nettee.board.application.domain;
 import lombok.*;
 
 import java.time.Instant;
+import me.nettee.board.application.domain.type.BoardStatus;
 
 @Getter
-@Setter
 @NoArgsConstructor
 public class Board {
 
@@ -13,7 +13,13 @@ public class Board {
 
     private String title;
 
+    private BoardStatus status;
+
     private String content;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
 
     private Instant deletedAt;
 
