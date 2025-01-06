@@ -79,8 +79,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(listOf(
-        "--enable-preview",
-        "-Amapstruct.defaultComponentModel=spring",
+        "--enable-preview"
+        //"-Amapstruct.defaultComponentModel=spring",
     ))
 }
 
