@@ -1,4 +1,4 @@
-package me.nettee.board.adapter.in.web.dto;
+package me.nettee.board.adapter.driving.web.dto;
 
 public record BoardDto(
         Long id,
