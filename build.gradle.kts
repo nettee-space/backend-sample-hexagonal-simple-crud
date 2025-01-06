@@ -48,6 +48,7 @@ dependencies {
 
     // lombok
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -55,6 +56,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
+    testCompileOnly("org.projectlombok:lombok")
 }
 
 kotlin{
