@@ -49,6 +49,7 @@ dependencies {
 
     // lombok
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
     // mapstruct
     implementation("org.mapstruct:mapstruct:1.6.3")
@@ -61,6 +62,8 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
+    testCompileOnly("org.projectlombok:lombok") // 테스트 의존성 추가
+    testAnnotationProcessor("org.projectlombok:lombok") // 테스트 의존성 추가
 }
 
 kotlin{
