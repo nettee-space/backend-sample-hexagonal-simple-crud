@@ -1,7 +1,8 @@
 package me.nettee.board.adapter.driving.web;
 
 import lombok.RequiredArgsConstructor;
-import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSelectOneResponse;
+import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
+import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
@@ -18,15 +19,13 @@ public class BoardQueryController {
     private final BoardDtoMapper boardDtoMapper;
 
     @GetMapping("/{boardId}")
-    public BoardSelectOneResponse getBoard(@PathVariable("boardId") long boardId) {
+    public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
         var board = boardReadUseCase.getBoard(boardId);
-        return BoardSelectOneResponse.builder()
-                .board(boardDtoMapper.toDtoDetailDto(board))
-                .build();
+        return boardDtoMapper.toDtoDetail(board);
     }
 
     @GetMapping
-    public Page<BoardSummaryDto> getBoards(Pageable pageable) {
+    public Page<BoardSummaryResponse> getBoards(Pageable pageable) {
         var boardList = boardReadUseCase.findGeneralBy(pageable).stream()
                 .map(boardDtoMapper::toDtoSummary)
                 .toList();
