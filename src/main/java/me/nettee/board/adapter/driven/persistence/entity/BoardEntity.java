@@ -15,7 +15,7 @@ import java.util.Objects;
 @Getter
 @DynamicUpdate
 @NoArgsConstructor
-@Entity(name = "library")
+@Entity(name = "board")
 public class BoardEntity {
 
     @Id
