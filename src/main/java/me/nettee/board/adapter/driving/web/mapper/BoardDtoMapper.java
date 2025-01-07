@@ -1,10 +1,7 @@
 package me.nettee.board.adapter.driving.web.mapper;
 
-import me.nettee.board.adapter.driving.web.dto.BoardCreateCommand;
-import me.nettee.board.adapter.driving.web.dto.BoardDto;
-import me.nettee.board.adapter.driving.web.dto.BoardDto.BoardSummaryDto;
-import me.nettee.board.adapter.driving.web.dto.BoardDto.BoardDetailDto;
-import me.nettee.board.adapter.driving.web.dto.BoardUpdateCommand;
+import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCreateCommand;
+import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardUpdateCommand;
 import me.nettee.board.application.domain.Board;
 import org.mapstruct.Mapper;
 

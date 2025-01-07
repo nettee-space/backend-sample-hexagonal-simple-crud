@@ -1,7 +1,6 @@
 package me.nettee.board.adapter.driving.web;
 
 import lombok.RequiredArgsConstructor;
-import me.nettee.board.adapter.driving.web.dto.BoardDto.BoardSummaryDto;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSelectOneResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.usecase.BoardReadUseCase;
