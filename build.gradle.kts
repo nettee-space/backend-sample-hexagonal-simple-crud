@@ -66,6 +66,7 @@ dependencies {
     testImplementation(kotlin("script-runtime"))
     testCompileOnly("org.projectlombok:lombok") // 테스트 의존성 추가
     testAnnotationProcessor("org.projectlombok:lombok") // 테스트 의존성 추가
+    testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 }
 
 kotlin{
