@@ -50,13 +50,17 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
+    // mapstruct
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
-    testCompileOnly("org.projectlombok:lombok")
 }
 
 kotlin{
@@ -80,8 +84,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(listOf(
-        "--enable-preview",
-        "-Amapstruct.defaultComponentModel=spring",
+        "--enable-preview"
+        //"-Amapstruct.defaultComponentModel=spring",
     ))
 }
 
