@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS board (
+SCREATE TABLE IF NOT EXISTS board (
     id          BIGSERIAL,
     title       VARCHAR(255),
     content     TEXT,

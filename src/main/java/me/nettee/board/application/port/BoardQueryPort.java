@@ -8,10 +8,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface BoardQueryPort {
-
-    Page<Board> findAll(Pageable pageable);
-
-    Optional<Board> findById(Long id);
-
-    Page<Board> findBoardListByStatus(BoardStatus status, int pageNumber, int size);
+    Optional<Board> findBoardById(Long id);
+    Page<Board> findBoards(int pageNumber, int size);
+    Page<Board> findBoardsByStatus(BoardStatus status, int pageNumber, int size);
+    Page<Board> findActiveAndSuspendedBoards(int pageNumber, int size);
 }

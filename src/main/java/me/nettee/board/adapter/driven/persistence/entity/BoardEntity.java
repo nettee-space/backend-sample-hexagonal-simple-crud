@@ -35,12 +35,9 @@ public class BoardEntity {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
     // 삭제
     public void softDelete() {
-        this.deletedAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.status = BoardStatus.REMOVED;
     }
 }
