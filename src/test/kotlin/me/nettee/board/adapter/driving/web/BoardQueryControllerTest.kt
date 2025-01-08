@@ -12,7 +12,6 @@ import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.board.application.usecase.BoardReadUseCase
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -85,14 +84,6 @@ class BoardQueryControllerTest(
 
         val pageable: Pageable = PageRequest.of(0, 10)
         val boardList = listOf(board1, board2, board3, board4, board5, board6, board7)
-        val boardSummaryResponse = boardList.map {
-            BoardSummaryResponse.builder()
-                .id(it.id)
-                .title(it.title)
-                .status(it.status)
-                .createdAt(it.createdAt)
-        }
-
         val boardPage = PageImpl(boardList, pageable, boardList.size.toLong())
 
         `when` (boardReadUseCase.findGeneralBy(pageable)).thenReturn(boardPage)
