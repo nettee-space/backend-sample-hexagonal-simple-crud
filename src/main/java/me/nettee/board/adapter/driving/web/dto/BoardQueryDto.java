@@ -18,8 +18,9 @@ public final class BoardQueryDto {
             Instant createdAt
     ){}
 
-    @JsonRootName(value = "board")
+
     @Builder
+    @JsonRootName("board")
     public record BoardDetailResponse(
             Long id,
             String title,

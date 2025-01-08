@@ -10,9 +10,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/v1/board")
+@RestController
+@RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
 public class BoardQueryController {
     private final BoardReadUseCase boardReadUseCase;
