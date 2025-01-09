@@ -1,7 +1,7 @@
 package me.nettee.board.adapter.driving.web
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
@@ -12,6 +12,7 @@ import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.board.application.usecase.BoardReadUseCase
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -84,18 +85,19 @@ class BoardQueryControllerTest(
 
         val pageable: Pageable = PageRequest.of(0, 10)
         val boardList = listOf(board1, board2, board3, board4, board5, board6, board7)
+
         val boardPage = PageImpl(boardList, pageable, boardList.size.toLong())
 
+
         `when` (boardReadUseCase.findGeneralBy(pageable)).thenReturn(boardPage)
-        boardList.forEach { board ->
-            `when`(boardDtoMapper.toDtoSummary(board)).thenReturn(
-                BoardSummaryResponse.builder()
-                    .id(board.id)
-                    .title(board.title)
-                    .status(board.status)
-                    .createdAt(board.createdAt)
-                    .build()
-            )
+        `when` (boardDtoMapper.toDtoSummary(any(Board::class.java))).thenAnswer {invocation ->
+            val board = invocation.getArgument(0) as Board
+            BoardSummaryResponse.builder()
+                .id(board.id)
+                .title(board.title)
+                .status(board.status)
+                .createdAt(board.createdAt)
+                .build()
         }
 
         val result = mvc.get("/api/v1/board"){
@@ -107,21 +109,24 @@ class BoardQueryControllerTest(
         }.andReturn()
 
         val jsonNode = objectMapper.readTree(result.response.contentAsString)
-        val contentJson = jsonNode.get("content").toString()
-        val response: List<BoardSummaryResponse> = objectMapper.readValue(
-            contentJson,
-            object : TypeReference<List<BoardSummaryResponse>>() {}
-        )
-        val jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response)
 
-        println("json Output:")
-        println(jsonOutput)
+        // "content" 노드에서 데이터를 추출
+        val contentJson = jsonNode["content"]
 
-        println("Compact JSON Output:")
-        println(objectMapper.writeValueAsString(response))
+        val wrappedNode = objectMapper.createObjectNode()
+        wrappedNode.set<ObjectNode>("boardlist", contentJson)
 
-        println("Response Objects:")
-        response.forEach { println(it) }
+        // JSON 출력
+        println("jsonNode :")
+        println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode))
+
+        println("contentJson :")
+        println(objectMapper.writeValueAsString(contentJson))
+
+        println("wrappedNode :")
+        println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrappedNode))
+
+
 
     }
 })
