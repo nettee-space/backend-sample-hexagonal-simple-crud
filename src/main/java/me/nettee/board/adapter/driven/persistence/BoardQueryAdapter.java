@@ -28,6 +28,12 @@ public class BoardQueryAdapter implements BoardQueryPort {
     }
 
     @Override
+    public Page<Board> findAll(Pageable pageable) {
+        return boardJpaRepository.findAll(pageable)
+                .map(boardEntityMapper::toDomain);
+    }
+
+    @Override
     public Page<Board> findBoards(int pageNumber, int size) {
         // Sort 객체를 생성하여 정렬 기준을 설정합니다.
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");

@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface BoardQueryPort {
     Optional<Board> findBoardById(Long id);
+    Page<Board> findAll(Pageable pageable);
     Page<Board> findBoards(int pageNumber, int size);
     Page<Board> findBoardsByStatus(BoardStatus status, int pageNumber, int size);
     Page<Board> findActiveAndSuspendedBoards(int pageNumber, int size);
