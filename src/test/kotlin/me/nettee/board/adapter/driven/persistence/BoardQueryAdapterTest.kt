@@ -17,10 +17,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import java.time.Instant
+import java.util.*
 
 
 class BoardQueryAdapterTest {
-
     @InjectMockKs
     private lateinit var boardQueryAdapter: BoardQueryAdapter
 
@@ -30,10 +30,73 @@ class BoardQueryAdapterTest {
     @MockK
     private lateinit var boardEntityMapper: BoardEntityMapper
 
+    private lateinit var board: Board
+    private lateinit var boardEntity: BoardEntity
+
     @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
-//        boardQueryAdapter = BoardQueryAdapter(boardEntityMapper, boardJpaRepository)
+
+        board = Board.builder()
+                .id(1L)
+                .title("제목")
+                .content("내용")
+                .status(BoardStatus.ACTIVE)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build()
+
+        boardEntity = BoardEntity.builder()
+                .id(1L)
+                .title("제목")
+                .content("내용")
+                .status(BoardStatus.ACTIVE)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build()
+    }
+
+    @Test
+    @DisplayName("findBoardById: 단건조회 테스트 게시글 존재 케이스")
+    fun `단건조회 테스트 게시글 존재 케이스`() {
+        // Given
+        val boardId = 1L
+
+        // Mock 객체의 동작 설정
+        every { boardJpaRepository.findById(boardId) } returns Optional.of(boardEntity)
+        every { boardEntityMapper.toDomain(boardEntity) } returns board
+
+        // When
+        val result = boardQueryAdapter.findBoardById(boardId)
+
+        // Then
+        val actualBoard = result.orElse(null) // Optional(= actualBoard)에서 값을 추출
+
+        assert(actualBoard != null) // 반환된 값이 null이 아닌지 확인
+        assert(actualBoard == board) // 반환된 값이 예상된 값(board)과 동일한지 확인
+
+        // 메서드 호출 검증
+        verify { boardJpaRepository.findById(boardId) }
+        verify { boardEntityMapper.toDomain(boardEntity) }
+    }
+
+    @Test
+    @DisplayName("findBoardById: 단건조회 테스트 게시글 존재하지 않는 케이스")
+    fun `단건조회 테스트 게시글 존재하지 않는 케이스`() {
+        // Given
+        val boardId = 1L
+
+        // Mock 객체의 동작 설정
+        every { boardJpaRepository.findById(boardId) } returns Optional.empty()
+
+        // When
+        val result = boardQueryAdapter.findBoardById(boardId)
+
+        // Then
+        assert(result.isEmpty()) // 결과가 비어 있는지 검증
+
+        // 메서드 호출 검증
+        verify { boardJpaRepository.findById(boardId) }
     }
 
     @Test
