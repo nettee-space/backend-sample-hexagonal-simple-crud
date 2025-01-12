@@ -1,5 +1,6 @@
 package me.nettee.board.adapter.driving.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCommandResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCreateCommand;
@@ -23,7 +24,7 @@ public class BoardCommandController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BoardCommandResponse createBoard(@RequestBody BoardCreateCommand boardCreateCommand) {
+    public BoardCommandResponse createBoard(@RequestBody @Valid BoardCreateCommand boardCreateCommand) {
         return BoardCommandResponse.builder()
                 .board(boardCreateUseCase.createBoard(boardDtoMapper.toDomain(boardCreateCommand)))
                 .build();
@@ -32,7 +33,7 @@ public class BoardCommandController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BoardCommandResponse updateBoard(@PathVariable("id") Long id,
-                             @RequestBody BoardUpdateCommand boardUpdateCommand) {
+                             @RequestBody @Valid BoardUpdateCommand boardUpdateCommand) {
         return BoardCommandResponse.builder()
                 .board(boardUpdateUseCase.updateBoard(boardDtoMapper.toDomain(id, boardUpdateCommand)))
                 .build();
