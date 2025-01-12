@@ -2,12 +2,8 @@ package me.nettee.board.adapter.driving.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.equals.shouldBeEqual
-import io.kotest.matchers.shouldBe
-import io.mockk.core.ValueClassSupport.boxedValue
-import io.mockk.every
-import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCommandResponse
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCreateCommand
+import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardUpdateCommand
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
@@ -16,6 +12,7 @@ import me.nettee.board.application.usecase.BoardDeleteUseCase
 import me.nettee.board.application.usecase.BoardUpdateUseCase
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -23,8 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(BoardCommandController::class)
@@ -35,40 +31,126 @@ class BoardCommandControllerTest(
     @MockitoBean private val boardUpdateUseCase : BoardUpdateUseCase,
     @MockitoBean private val boardDeleteUseCase : BoardDeleteUseCase,
     @MockitoBean private val boardDtoMapper : BoardDtoMapper
-) : FreeSpec({
+): FreeSpec({
 
-    val objectMapper = ObjectMapper()
+    "게시판 커맨트 컨트롤러 테스트"-{
+        // given
+        val objectMapper = ObjectMapper()
+        val boardDomain = Board.builder()
+            .id(1L).title("테스트게시판").content("테스트게시판내용").status(BoardStatus.ACTIVE).build()
+        // when
+        `when` (boardDtoMapper.toDomain(any())).thenReturn(boardDomain)
 
-    "게시판 생성"-{
-        "게시판 NotNull을 충족하여 생성한 경우"{
+        "게시판 생성"-{
             // given
-            val boardCreateCommand = BoardCreateCommand("게시판 테스트","게시판 테스트 내용")
-            var newBoard = Board(1,"게시판 테스트","게시판 테스트 내용",BoardStatus.ACTIVE, null, null, null)
-            val boardCommandResponse = BoardCommandResponse.builder()
-                .board(newBoard)
-                .build()
-
-            `when` (boardDtoMapper.toDomain(any())).thenReturn(newBoard)
-            `when` (boardCreateUseCase.createBoard(any())).thenReturn(newBoard)
-
+            val boardCreateResponse = boardDomain
+            val mvcPost = fun(request: BoardCreateCommand): ResultActionsDsl {
+                return mvc.post("/api/v1/board"){
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }.andDo { print() }
+            }
             // when
-            val result = mvc.post("/api/v1/board"){
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(boardCreateCommand)
-            }.andExpect {
-                status { isCreated() }
-            }.andReturn()
+            `when` (boardCreateUseCase.createBoard(any())).thenReturn(boardCreateResponse)
 
-            // then
-            val responseResult = objectMapper.readValue(result.response.contentAsString, BoardCommandResponse::class.java)
-            println(responseResult.board.equals(boardCommandResponse.board))
+            "필수값 NotNull 조건 충족으로 2XX 상태 반환"{
+                // given
+                val createCommand = BoardCreateCommand("테스트게시판","테스트게시판내용")
+                // then
+                mvcPost(createCommand)
+                    .andExpect{
+                        status { is2xxSuccessful() }
+                        jsonPath("board.id"){value(boardCreateResponse.id)}
+                        jsonPath("board.title"){value(boardCreateResponse.title)}
+                        jsonPath("board.content"){value(boardCreateResponse.content)}
+                    }
+            }
+            "필수값 NotNul 조건 불충족으로 4xx 상태 반환"-{
+                "title Null 4XX 상태 반환"{
+                    // given
+                    val failCreateCommand = BoardCreateCommand(null,"테스트게시판내용")
+                    // then
+                    mvcPost(failCreateCommand)
+                        .andExpect {
+                            status { is4xxClientError() }
+                        }
+                }
+                "content Null 4XX 상태 반환"{
+                    // given
+                    val failCreateCommand = BoardCreateCommand("테스트게시판",null)
+                    // then
+                    mvcPost(failCreateCommand)
+                        .andExpect {
+                            status { is4xxClientError() }
+                        }
+                }
+            }
+        }
+        "게시판 수정"-{
+            // given
+            val boardUpdateResponse = Board.builder()
+                .id(1L).title("테스트게시판수정").content("테스트게시판내용수정").status(BoardStatus.ACTIVE).build()
 
-            println(objectMapper.writeValueAsString(responseResult))
-            println("responseResult: $responseResult")
-            println("boardCommandResponse: $boardCommandResponse")
+            val mvcPut = fun(request: BoardUpdateCommand): ResultActionsDsl {
+                return mvc.patch("/api/v1/board/{id}", boardDomain.id){
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(request)
+                }.andDo { print() }
+            }
+            // when
+            `when` (boardUpdateUseCase.updateBoard(any())).thenReturn(boardUpdateResponse)
 
-            responseResult.board.id shouldBeEqual boardCommandResponse.board.id
-            // responseResult.board shouldBeEqual boardCommandResponse.board
+            "필수값 NotNull 조건 충족으로 2XX 상태 반환"{
+                // given
+                val updateCommand = BoardUpdateCommand("테스트게시판수정","테스트게시판내용수정")
+                // then
+                mvcPut(updateCommand)
+                    .andExpect{
+                        status { is2xxSuccessful() }
+                        jsonPath("board.id"){value(boardDomain.id)}
+                        jsonPath("board.title"){value(boardUpdateResponse.title)}
+                        jsonPath("board.content"){value(boardUpdateResponse.content)}
+                    }
+            }
+            "필수값 NotNul 조건 불충족으로 4xx 상태 반환"-{
+                "title Null 4XX 상태 반환" {
+                    // given
+                    val failUpdateCommand = BoardUpdateCommand(null, "테스트게시판내용수정")
+                    // then
+                    mvcPut(failUpdateCommand)
+                        .andExpect {
+                            status { is4xxClientError() }
+                        }
+                }
+                "content Null 4XX 상태 반환" {
+                    // given
+                    val failUpdateCommand = BoardUpdateCommand("테스트게시판수정", null)
+                    // then
+                    mvcPut(failUpdateCommand)
+                        .andExpect {
+                            status { is4xxClientError() }
+                        }
+                }
+            }
+        }
+        "게시판 삭제"-{
+            // given
+            val mvcDelete = fun(): ResultActionsDsl {
+                return mvc.delete("/api/v1/board/{id}", boardDomain.id){
+                    contentType = MediaType.APPLICATION_JSON
+                }.andDo { print() }
+            }
+
+            "삭제 성공으로 2xx 상태 반환"{
+                // when
+                doNothing().`when`(boardDeleteUseCase).deleteBoard(any())
+
+                // then
+                mvcDelete()
+                    .andExpect {
+                        status { is2xxSuccessful() }
+                    }
+            }
         }
     }
 })
