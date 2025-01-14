@@ -41,7 +41,7 @@ public class BoardCommandController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-            public void deleteBoard(@PathVariable("id") Long id) {
+    public void deleteBoard(@PathVariable("id") Long id) {
         boardDeleteUseCase.deleteBoard(id);
     }
 }
