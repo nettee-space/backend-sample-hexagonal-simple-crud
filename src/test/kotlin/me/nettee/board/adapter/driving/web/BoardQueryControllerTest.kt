@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.shouldBe
-import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
+import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
-import me.nettee.board.application.usecase.BoardReadByStatusesUseCase
+import me.nettee.board.application.usecase.BoardReadByStatusesUsecase
 import me.nettee.board.application.usecase.BoardReadUseCase
-import org.apache.coyote.BadRequestException
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyLong
@@ -20,10 +18,8 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -40,7 +36,7 @@ import java.time.Instant
 @AutoConfigureMockMvc
 class BoardQueryControllerTest(
     @MockitoBean  private val boardReadUseCase : BoardReadUseCase,
-    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUseCase,
+    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUsecase,
     @MockitoBean private val boardDtoMapper : BoardDtoMapper,
     @Autowired private val mvc: MockMvc
 ) : FreeSpec({
