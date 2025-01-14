@@ -67,7 +67,7 @@ class BoardQueryAdapterTest {
         every { boardEntityMapper.toDomain(boardEntity) } returns board
 
         // When
-        val result = boardQueryAdapter.findBoardById(boardId)
+        val result = boardQueryAdapter.findById(boardId)
 
         // Then
         val actualBoard = result.orElse(null) // Optional(= actualBoard)에서 값을 추출
@@ -90,7 +90,7 @@ class BoardQueryAdapterTest {
         every { boardJpaRepository.findById(boardId) } returns Optional.empty()
 
         // When
-        val result = boardQueryAdapter.findBoardById(boardId)
+        val result = boardQueryAdapter.findById(boardId)
 
         // Then
         assert(result.isEmpty()) // 결과가 비어 있는지 검증
