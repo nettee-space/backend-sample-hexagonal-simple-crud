@@ -10,6 +10,7 @@ import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
+import me.nettee.board.application.usecase.BoardReadByStatusesUseCase
 import me.nettee.board.application.usecase.BoardReadUseCase
 import org.apache.coyote.BadRequestException
 import org.junit.jupiter.api.extension.ExtendWith
@@ -39,25 +40,35 @@ import java.time.Instant
 @AutoConfigureMockMvc
 class BoardQueryControllerTest(
     @MockitoBean  private val boardReadUseCase : BoardReadUseCase,
+    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUseCase,
     @MockitoBean private val boardDtoMapper : BoardDtoMapper,
     @Autowired private val mvc: MockMvc
 ) : FreeSpec({
 
     val objectMapper = ObjectMapper()
     lateinit var boardList: List<Board>
+    lateinit var statusesList: List<BoardStatus>
 
     beforeSpec {
         objectMapper.registerModule(JavaTimeModule())
         objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE)
 
         // list 반복문 완성 코드 ***
-        boardList = (1..14).map {
-            Board(it.toLong(),"title$it","content$it", BoardStatus.ACTIVE, Instant.now(), null, null)
+        boardList = (1..14).flatMap {
+            listOf(
+                Board(it.toLong(), "title$it", "content$it", BoardStatus.ACTIVE, Instant.now(), null, null),
+                Board(it.toLong(), "title$it", "content$it", BoardStatus.SUSPENDED, Instant.now(), null, null)
+            )
         }
+
         `when` (boardReadUseCase.getBoard(anyLong())).thenAnswer { findBoardById(boardList, it.arguments[0] as Long) }
         `when`(boardDtoMapper.toDtoDetail(any(Board::class.java))).thenAnswer { mapToBoardDetailResponse(it.getArgument(0) as Board) }
         `when`(boardReadUseCase.findGeneralBy(any<PageRequest>())).thenAnswer { createPageFromBoardList(boardList, it.getArgument<PageRequest>(0)) }
         `when`(boardDtoMapper.toDtoSummary(any(Board::class.java))).thenAnswer { mapToBoardSummaryResponse(it.getArgument(0) as Board) }
+        `when`(boardReadByStatusesUseCase.findByStatuses(any<PageRequest>(), any<List<BoardStatus>>())).thenAnswer {
+            createPageFromBoardListByStatusList(boardList, it.getArgument<PageRequest>(0), it.getArgument<List<BoardStatus>>(1))
+        }
+
     }
 
     "게시판 상세 조회" - {
@@ -109,7 +120,38 @@ class BoardQueryControllerTest(
         }
 
         "정상 요청으로 인한 4xx 상태 반환" {
-            val mvcResult = mvcGet(2)
+            val mvcResult = mvcGet(6)
+                .andExpect { status { is4xxClientError() } }
+                .andReturn()
+
+            println("status: ${mvcResult.response.status}")
+        }
+    }
+
+    "statuses 사용 게시판 목록 조회" - {
+        val mvcGet = fun(page: Int, statuses: List<BoardStatus>): ResultActionsDsl{
+            return mvc.get("/api/v1/board/statuses") {
+                queryParam("page", page.toString())
+                queryParam("size", "10")
+                queryParam("statuses", statuses.joinToString(",") { it.name })
+                contentType = MediaType.APPLICATION_JSON
+            }
+        }
+
+        "정상 요청으로 인한 2xx 상태 반환" {
+            val statuses = listOf(BoardStatus.ACTIVE, BoardStatus.REMOVED)
+            val mvcResult = mvcGet(1, statuses)
+                .andExpect { status { is2xxSuccessful() } }
+                .andReturn()
+
+            mvcResult.response.contentAsString
+                .let { objectMapper.readTree(it) as ObjectNode }
+                .let { println(it) }
+        }
+
+        "정상 요청으로 인한 4xx 상태 반환" {
+            val statuses = listOf( BoardStatus.REMOVED)
+            val mvcResult = mvcGet(2, statuses)
                 .andExpect { status { is4xxClientError() } }
                 .andReturn()
 
@@ -154,4 +196,22 @@ fun createPageFromBoardList(
 fun findBoardById(boardList: List<Board>, boardId: Long): Board {
     return boardList.associateBy { it.id }[boardId]
         ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid board ID: $boardId")
+}
+
+fun createPageFromBoardListByStatusList(
+    boardList: List<Board>,
+    pageable: PageRequest,
+    boardStatusList: List<BoardStatus>
+): PageImpl<Board> {
+   val filteredBoards = boardList.filter { board ->
+        board.status in boardStatusList
+    }.takeIf { it.isNotEmpty() }
+        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid board status: $boardStatusList")
+
+    val pageContent = filteredBoards.drop(pageable.pageNumber * pageable.pageSize)
+        .take(pageable.pageSize)
+        .takeIf { it.isNotEmpty() }
+        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid page size: ${pageable.pageSize}")
+
+    return PageImpl(pageContent, pageable, filteredBoards.size.toLong())
 }
