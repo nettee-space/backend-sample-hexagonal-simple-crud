@@ -12,8 +12,6 @@ public interface BoardQueryPort {
 
     Optional<Board> findById(Long id);
 
-    Page<Board> findAll(Pageable pageable);
-
     Page<Board> findByStatusesList(Pageable pageable, List<BoardStatus> statuses);
 
 }
