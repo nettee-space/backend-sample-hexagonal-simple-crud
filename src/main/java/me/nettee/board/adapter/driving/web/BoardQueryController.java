@@ -5,7 +5,7 @@ import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.usecase.BoardReadByStatusesUsecase;
+import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,20 +20,12 @@ import java.util.List;
 public class BoardQueryController {
     private final BoardReadUseCase boardReadUseCase;
     private final BoardDtoMapper boardDtoMapper;
-    private final BoardReadByStatusesUsecase boardReadByStatusesUseCase;
+    private final BoardReadByStatusesUseCase boardReadByStatusesUseCase;
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
         var board = boardReadUseCase.getBoard(boardId);
         return boardDtoMapper.toDtoDetail(board);
-    }
-
-    @GetMapping
-    public Page<BoardSummaryResponse> getBoards(Pageable pageable) {
-        var boardList = boardReadUseCase.findGeneralBy(pageable).stream()
-                .map(boardDtoMapper::toDtoSummary)
-                .toList();
-        return new PageImpl<>(boardList, pageable, boardList.size());
     }
 
     @GetMapping("/statuses")

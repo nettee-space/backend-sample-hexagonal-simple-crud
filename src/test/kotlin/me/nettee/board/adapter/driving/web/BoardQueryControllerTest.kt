@@ -9,7 +9,7 @@ import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryRespons
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
-import me.nettee.board.application.usecase.BoardReadByStatusesUsecase
+import me.nettee.board.application.usecase.BoardReadByStatusesUseCase
 import me.nettee.board.application.usecase.BoardReadUseCase
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
@@ -36,7 +36,7 @@ import java.time.Instant
 @AutoConfigureMockMvc
 class BoardQueryControllerTest(
     @MockitoBean  private val boardReadUseCase : BoardReadUseCase,
-    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUsecase,
+    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUseCase,
     @MockitoBean private val boardDtoMapper : BoardDtoMapper,
     @Autowired private val mvc: MockMvc
 ) : FreeSpec({
@@ -59,7 +59,6 @@ class BoardQueryControllerTest(
 
         `when` (boardReadUseCase.getBoard(anyLong())).thenAnswer { findBoardById(boardList, it.arguments[0] as Long) }
         `when`(boardDtoMapper.toDtoDetail(any(Board::class.java))).thenAnswer { mapToBoardDetailResponse(it.getArgument(0) as Board) }
-        `when`(boardReadUseCase.findGeneralBy(any<PageRequest>())).thenAnswer { createPageFromBoardList(boardList, it.getArgument<PageRequest>(0)) }
         `when`(boardDtoMapper.toDtoSummary(any(Board::class.java))).thenAnswer { mapToBoardSummaryResponse(it.getArgument(0) as Board) }
         `when`(boardReadByStatusesUseCase.findByStatuses(any<PageRequest>(), any<List<BoardStatus>>())).thenAnswer {
             createPageFromBoardListByStatusList(boardList, it.getArgument<PageRequest>(0), it.getArgument<List<BoardStatus>>(1))
