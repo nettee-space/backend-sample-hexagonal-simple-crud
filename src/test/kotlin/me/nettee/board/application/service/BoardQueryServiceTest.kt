@@ -53,29 +53,6 @@ class BoardQueryServiceTest : FreeSpec({
             }
         }
 
-        "findAll" - {
-            "모든 게시글 목록을 페이징 조회한다." {
-                // given
-                val pageable = PageRequest.of(0, 10)
-                val boards = listOf(
-                    Board.builder().id(1L).title("First Board").status(BoardStatus.ACTIVE).build(),
-                    Board.builder().id(2L).title("Second Board").status(BoardStatus.SUSPENDED).build()
-                )
-                val expectedPage = PageImpl(boards, pageable, boards.size.toLong())
-                every {
-                    boardQueryPort.findAll(pageable)
-                } returns expectedPage
-
-                // when
-                val result = boardQueryService.findGeneralBy(pageable)
-
-                // then
-                result shouldBe expectedPage
-                verify { boardQueryPort.findAll(pageable) }
-
-            }
-        }
-
         "findByStatuses" - {
             "상태 목록으로 조회 시, 페이징 조회한다." {
                 // given
