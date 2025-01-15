@@ -7,6 +7,4 @@ import org.springframework.data.domain.Pageable;
 public interface BoardReadUseCase {
 
     Board getBoard(Long id);
-
-    Page<Board> findGeneralBy(Pageable pageable);
 }
