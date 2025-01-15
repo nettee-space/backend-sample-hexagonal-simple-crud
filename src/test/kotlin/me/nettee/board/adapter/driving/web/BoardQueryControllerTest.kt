@@ -148,7 +148,7 @@ fun mapToBoardDetailResponse(board: Board): BoardDetailResponse {
 
 fun findBoardById(boardList: List<Board>, boardId: Long): Board {
     return boardList.associateBy { it.id }[boardId]
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid board ID: $boardId")
+        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid board ID: $boardId")
 }
 
 fun createPageFromBoardListByStatusList(
@@ -159,12 +159,12 @@ fun createPageFromBoardListByStatusList(
    val filteredBoards = boardList.filter { board ->
         board.status in boardStatusList
     }.takeIf { it.isNotEmpty() }
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid board status: $boardStatusList")
+        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid board status: $boardStatusList")
 
     val pageContent = filteredBoards.drop(pageable.pageNumber * pageable.pageSize)
         .take(pageable.pageSize)
         .takeIf { it.isNotEmpty() }
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid page size: ${pageable.pageSize}")
+        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid page size: ${pageable.pageSize}")
 
     return PageImpl(pageContent, pageable, filteredBoards.size.toLong())
 }
