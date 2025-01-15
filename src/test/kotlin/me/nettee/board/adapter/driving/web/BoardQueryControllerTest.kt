@@ -43,7 +43,6 @@ class BoardQueryControllerTest(
 
     val objectMapper = ObjectMapper()
     lateinit var boardList: List<Board>
-    lateinit var statusesList: List<BoardStatus>
 
     beforeSpec {
         objectMapper.registerModule(JavaTimeModule())
@@ -63,7 +62,6 @@ class BoardQueryControllerTest(
         `when`(boardReadByStatusesUseCase.findByStatuses(any<PageRequest>(), any<List<BoardStatus>>())).thenAnswer {
             createPageFromBoardListByStatusList(boardList, it.getArgument<PageRequest>(0), it.getArgument<List<BoardStatus>>(1))
         }
-
     }
 
     "게시판 상세 조회" - {
@@ -93,34 +91,6 @@ class BoardQueryControllerTest(
             println("status: ${mvcResult.response.status}")
         }
 
-    }
-
-    "게시판 목록 조회" - {
-        val mvcGet = fun(page: Int): ResultActionsDsl{
-            return mvc.get("/api/v1/board") {
-                queryParam("page", page.toString())
-                queryParam("size", "10")
-                contentType = MediaType.APPLICATION_JSON
-            }
-        }
-
-        "정상 요청으로 인한 2xx 상태 반환" {
-            val mvcResult = mvcGet(1)
-                .andExpect { status { is2xxSuccessful() } }
-                .andReturn()
-
-            mvcResult.response.contentAsString
-            .let { objectMapper.readTree(it) as ObjectNode }
-            .let { println(it) }
-        }
-
-        "정상 요청으로 인한 4xx 상태 반환" {
-            val mvcResult = mvcGet(6)
-                .andExpect { status { is4xxClientError() } }
-                .andReturn()
-
-            println("status: ${mvcResult.response.status}")
-        }
     }
 
     "statuses 사용 게시판 목록 조회" - {
@@ -174,18 +144,6 @@ fun mapToBoardDetailResponse(board: Board): BoardDetailResponse {
         .createdAt(board.createdAt)
         .updatedAt(board.updatedAt)
         .build()
-}
-
-fun createPageFromBoardList(
-    boardList: List<Board>,
-    pageable: PageRequest
-): PageImpl<Board> {
-    val pageContent = boardList.drop(pageable.pageNumber * pageable.pageSize)
-        .take(pageable.pageSize)
-        .takeIf { it.isNotEmpty() }
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid page size: ${pageable.pageSize}")
-
-    return PageImpl(pageContent, pageable, boardList.size.toLong())
 }
 
 fun findBoardById(boardList: List<Board>, boardId: Long): Board {
