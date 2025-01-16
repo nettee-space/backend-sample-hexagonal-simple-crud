@@ -1,6 +1,5 @@
 package me.nettee.board.adapter.driven.persistence;
 
-import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driven.mapper.BoardEntityMapper;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
 import me.nettee.board.adapter.driven.persistence.entity.QBoardEntity;
@@ -8,16 +7,13 @@ import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.port.BoardQueryPort;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class BoardQueryAdapter extends QuerydslRepositorySupport implements BoardQueryPort {
