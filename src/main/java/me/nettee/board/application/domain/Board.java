@@ -26,8 +26,6 @@ public class Board {
 
     private Instant updatedAt;
 
-    private Instant deletedAt;
-
     @Builder(
         builderClassName = "updateBoardBuilder",
         builderMethodName = "prepareUpdate",
