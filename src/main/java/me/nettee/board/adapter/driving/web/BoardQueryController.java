@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
+import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/board")
+@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 public class BoardQueryController {
     private final BoardReadUseCase boardReadUseCase;
@@ -24,15 +25,13 @@ public class BoardQueryController {
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
-        var board = boardReadUseCase.getBoard(boardId);
+        Board board = boardReadUseCase.getBoard(boardId);
         return boardDtoMapper.toDtoDetail(board);
     }
 
-    @GetMapping("/statuses")
-    public Page<BoardSummaryResponse> getBoardsByStatuses(Pageable pageable,@RequestParam List<BoardStatus> statuses) {
-        var boardByList = boardReadByStatusesUseCase.findByStatuses(pageable, statuses).stream()
-                .map(boardDtoMapper::toDtoSummary)
-                .toList();
-        return  new PageImpl<>(boardByList, pageable, boardByList.size());
+    @GetMapping
+    public Page<BoardSummaryResponse> getBoardsByStatuses(Pageable pageable, List<BoardStatus> statuses) {
+        return  boardReadByStatusesUseCase.findByStatuses(pageable, statuses)
+                .map(boardDtoMapper::toDtoSummary);
     }
 }

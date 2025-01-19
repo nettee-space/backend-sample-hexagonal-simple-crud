@@ -18,6 +18,7 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -66,7 +67,7 @@ class BoardQueryControllerTest(
 
     "게시판 상세 조회" - {
         val mvcGet = fun(boardId: Long): ResultActionsDsl{
-            return mvc.get("/api/v1/board/$boardId") {
+            return mvc.get("/api/v1/boards/$boardId") {
                 contentType = MediaType.APPLICATION_JSON
             }
         }
@@ -95,7 +96,7 @@ class BoardQueryControllerTest(
 
     "statuses 사용 게시판 목록 조회" - {
         val mvcGet = fun(page: Int, statuses: List<BoardStatus>): ResultActionsDsl{
-            return mvc.get("/api/v1/board/statuses") {
+            return mvc.get("/api/v1/boards") {
                 queryParam("page", page.toString())
                 queryParam("size", "10")
                 queryParam("statuses", statuses.joinToString(",") { it.name })
@@ -155,10 +156,9 @@ fun createPageFromBoardListByStatusList(
     boardList: List<Board>,
     pageable: PageRequest,
     boardStatusList: List<BoardStatus>
-): PageImpl<Board> {
-   val filteredBoards = boardList.filter { board ->
-        board.status in boardStatusList
-    }.takeIf { it.isNotEmpty() }
+): Page<Board> {
+   val filteredBoards = boardList.filter { it.status in boardStatusList }
+       .takeIf { it.isNotEmpty() }
         ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid board status: $boardStatusList")
 
     val pageContent = filteredBoards.drop(pageable.pageNumber * pageable.pageSize)
