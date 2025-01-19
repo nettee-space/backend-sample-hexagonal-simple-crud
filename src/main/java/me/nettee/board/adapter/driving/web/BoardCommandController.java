@@ -1,6 +1,5 @@
 package me.nettee.board.adapter.driving.web;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCommandResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCreateCommand;
@@ -10,6 +9,7 @@ import me.nettee.board.application.usecase.BoardCreateUseCase;
 import me.nettee.board.application.usecase.BoardDeleteUseCase;
 import me.nettee.board.application.usecase.BoardUpdateUseCase;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,18 +24,24 @@ public class BoardCommandController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BoardCommandResponse createBoard(@RequestBody @Valid BoardCreateCommand boardCreateCommand) {
+    public BoardCommandResponse createBoard(@Validated @RequestBody BoardCreateCommand boardCreateCommand) {
+        // Map to Domain
+        var board = boardDtoMapper.toDomain(boardCreateCommand);
+
         return BoardCommandResponse.builder()
-                .board(boardCreateUseCase.createBoard(boardDtoMapper.toDomain(boardCreateCommand)))
+                .board(boardCreateUseCase.createBoard(board))
                 .build();
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BoardCommandResponse updateBoard(@PathVariable("id") Long id,
-                             @RequestBody @Valid BoardUpdateCommand boardUpdateCommand) {
+                                            @RequestBody @Validated BoardUpdateCommand boardUpdateCommand) {
+        // Map to Domain
+        var board = boardDtoMapper.toDomain(id, boardUpdateCommand);
+
         return BoardCommandResponse.builder()
-                .board(boardUpdateUseCase.updateBoard(boardDtoMapper.toDomain(id, boardUpdateCommand)))
+                .board(boardUpdateUseCase.updateBoard(board))
                 .build();
     }
 
