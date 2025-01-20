@@ -58,9 +58,22 @@ dependencies {
 
     //jackson
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
-    // test
+
+    // Querydsl
+    implementation("com.querydsl:querydsl-jpa:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
+    // lombok test
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
+    // JUnit
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // test database
+    testImplementation("com.h2database:h2")
+    // test tool
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
