@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BoardReadByStatusesUseCase {
-    Page<Board> findByStatuses(Pageable pageable, Set<BoardStatus> statuses);
+
+    Page<Board> findByStatuses(Set<BoardStatus> statuses, Pageable pageable);
+
 }
 
