@@ -1,6 +1,6 @@
 package me.nettee.board.application.service;
 
-import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
@@ -24,7 +24,7 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
     }
 
     @Override
-    public Page<Board> findByStatuses(Pageable pageable, List<BoardStatus> statuses) {
+    public Page<Board> findByStatuses(Pageable pageable, Set<BoardStatus> statuses) {
         return boardQueryPort.findByStatusesList(pageable, statuses);
     }
 }
