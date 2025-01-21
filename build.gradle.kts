@@ -55,6 +55,9 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
+    //jackson
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
+
     // Querydsl
     implementation("com.querydsl:querydsl-jpa:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
     annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
@@ -62,11 +65,19 @@ dependencies {
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
     // test
+    // lombok test
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
+    // JUnit
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // test database
+    testImplementation("com.h2database:h2")
+    // test tool
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
+    testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 }
 
 kotlin{
