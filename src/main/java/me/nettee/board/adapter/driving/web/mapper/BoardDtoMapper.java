@@ -5,24 +5,22 @@ import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardUpdateComman
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.application.domain.Board;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface BoardDtoMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "title", source = "title")
+    @Mapping(target = "content", source = "content")
     Board toDomain(BoardCreateCommand command);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "title", source = "command.title")
+    @Mapping(target = "content", source = "command.content")
     Board toDomain(Long id, BoardUpdateCommand command);
 
     BoardDetailResponse toDtoDetail(Board board);
