@@ -32,8 +32,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                         .select(boardEntity)
                         .from(boardEntity)
                         .where(
-                                boardEntity.id.eq(id),
-                                boardEntity.status.ne(BoardStatus.REMOVED)
+                                boardEntity.id.eq(id)
                         ).fetchOne()
         );
     }
@@ -44,7 +43,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
                 .from(boardEntity)
-                .where(boardEntity.status.ne(BoardStatus.REMOVED));
+                .where();
 
         // pageable 정렬 조건 적용
         pageable.getSort().forEach(order -> {
@@ -63,7 +62,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
         var totalCount  = getQuerydsl().createQuery()
                 .select(boardEntity.count())
                 .from(boardEntity)
-                .where(boardEntity.status.ne(BoardStatus.REMOVED));
+                .where();
 
         return PageableExecutionUtils.getPage(
                 result.stream().map(boardEntityMapper::toDomain).toList(),
