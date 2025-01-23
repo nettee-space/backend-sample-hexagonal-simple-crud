@@ -1,142 +1,162 @@
 package me.nettee.adapter.driven.persistence
 
-import io.kotest.assertions.eq.eq
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
-import io.mockk.*
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import me.nettee.board.adapter.driven.persistence.BoardCommandAdapter
 import me.nettee.board.adapter.driven.persistence.BoardJpaRepository
-import me.nettee.board.adapter.driven.persistence.entity.BoardEntity
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
-import java.time.Instant
-import java.util.Optional
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.ComponentScan
+import java.util.Objects
 
-class BoardCommandAdapterTest: FreeSpec ({
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ComponentScan(basePackageClasses = [BoardEntityMapper::class])
+class BoardCommandAdapterTest(
+    @Autowired private val repository: BoardJpaRepository,
+    @Autowired private val mapper : BoardEntityMapper
+) : FreeSpec({
+    val adapter = BoardCommandAdapter(repository, mapper)
+    val testTitle = "Test Title"
+    val testContent = "Test Content"
 
-    lateinit var repository: BoardJpaRepository
-    lateinit var mapper: BoardEntityMapper
-    lateinit var adapter: BoardCommandAdapter
-    lateinit var domain: Board
-    lateinit var savedDomain: Board
-    lateinit var entity: BoardEntity
-    lateinit var savedEntity: BoardEntity
+    "[Pass] Create(boardDomain)" - {
+        val board = Board.builder()
+            .title(testTitle)
+            .content(testContent)
+            .status(BoardStatus.ACTIVE)
+            .build()
 
-    beforeTest {
-        repository = mockk<BoardJpaRepository>(relaxed = true)
-        mapper = mockk<BoardEntityMapper>(relaxed = true)
-        adapter = BoardCommandAdapter(repository, mapper)
-        domain = mockk<Board>() {
-            every { id } returns null
-            every { title } returns "Hi"
-            every { content } returns "Hello World"
-            every { status } returns null
-            every { createdAt } returns null
-            every { updatedAt } returns null
-        }
+        "save: boardDomain -> boardDomain" - {
+            val result = adapter.create(board)
 
-        savedDomain = mockk<Board>() {
-            every { id } returns 1L
-            every { title } returns "Hi"
-            every { content } returns "Hello World"
-            every { status } returns BoardStatus.ACTIVE
-            every { createdAt } returns Instant.now()
-            every { updatedAt } returns Instant.now()
-        }
+            "id 생성" {
+                result.id shouldNotBe null
+            }
 
-        entity = mockk<BoardEntity>() {
-            every { id } returns null
-            every { title } returns "Hi"
-            every { content } returns "Hello World"
-            every { status } returns null
-            every { createdAt } returns null
-            every { updatedAt } returns null
-        }
+            "title, content 입력 일치 확인" {
+                result.title shouldBeEqual testTitle
+                result.content shouldBeEqual testContent
+            }
 
-        savedEntity = mockk<BoardEntity>() {
-            every { id } returns 1L
-            every { title } returns "Hi"
-            every { content } returns "Hello World"
-            every { status } returns BoardStatus.ACTIVE
-            every { createdAt } returns Instant.now()
-            every { updatedAt } returns Instant.now()
+            "status 값 변경: null -> BoardStatus.ACTIVE" {
+                result.status shouldBeEqual BoardStatus.ACTIVE
+            }
+
+            "createdAt, updatedAt 시간 생성 확인" {
+                result.createdAt shouldNotBe null
+                result.updatedAt shouldNotBe null
+            }
+
+            // NOTE: createdAt, updatedAt을 동일하게 만들자는 요건 시
+            "createdAt과 updatedAt 일치 확인" {
+                result.createdAt shouldBeEqual result.updatedAt
+            }
         }
     }
 
-    "Create(boardDomain)" - {
-        "save: boardDomain -> boardDomain" {
-            every { mapper.toEntity(domain) } returns entity
-            every { mapper.toDomain(savedEntity) } returns savedDomain
-            every { repository.save(entity) } returns savedEntity
+    "[Exception] Create(noTitleDomain)" - {
+        val noTitleBoard = Board.builder()
+            .content(testContent)
+            .build()
 
-            val result = adapter.create(domain)
+        "noTitleDomain -> Exception(title cannot be null)" - {
 
-            verify { mapper.toEntity(domain) }
-            verify { repository.save(entity) }
-            verify { mapper.toDomain(savedEntity) }
-            result shouldBe savedDomain
-        }
-
-        "save: noTitleDomain -> Exception(title cannot be null)" {
-            val noTitleDomain = domain
-            every { noTitleDomain.title } returns null
-            every { mapper.toEntity(noTitleDomain) } throws IllegalArgumentException("title cannot be null")
-
-            val result = shouldThrow<IllegalArgumentException> {
-                adapter.create(noTitleDomain)
+            val result = shouldThrow<NullPointerException> {
+                // 실질적으로는 Board,BoardEntity 를 처리하는 로직을 담아야하는게 아닌가?
+                Objects.requireNonNull(noTitleBoard.title, "Board not found")
             }
 
-            verify { mapper.toEntity(noTitleDomain) }
-            result.message shouldBe "title cannot be null"
-        }
-
-        "save: noContentDomain -> Exception(content cannot be null)" {
-            val noContentDomain = domain
-            every { noContentDomain.content } returns null
-            every { mapper.toEntity(noContentDomain) } throws IllegalArgumentException("content cannot be null")
-
-            val result = shouldThrow<IllegalArgumentException> {
-                adapter.create(noContentDomain)
+            "title 값이 없으므로 Null 에러 발생" {
+                result.message shouldBe "Board not found"
             }
-
-            verify { mapper.toEntity(noContentDomain) }
-            result.message shouldBe "content cannot be null"
         }
     }
 
-// 추가 작업 필요
-//    "Update(boardDomain)" - {
-//        "updateBoard: updatedId -> updateDomain" {
-//            val updatedDomain = savedDomain
-//            val updatedEntity = savedEntity
-//            every { repository.findById(updatedDomain.id) } returns Optional.ofNullable(savedEntity)
-//            every { mapper.toDomain(updatedEntity) } returns updatedDomain
-//
-//            val result = adapter.update(updatedDomain)
-//
-//            eq(result, updatedDomain)
-//        }
-//    }
-//
-// 추가 작업 필요
-//    "Delete(boardDomain)" - {
-//        "softDelete: id -> void" {
-//            val changeStatusRemovedEntity = entity
-//            every { changeStatusRemovedEntity.id } returns 1L
-//            every { changeStatusRemovedEntity.status } returns BoardStatus.REMOVED
-//            every { changeStatusRemovedEntity.createdAt }returns savedEntity.createdAt
-//            every { changeStatusRemovedEntity.updatedAt }returns Instant.now()
-//            every { repository.findById(savedDomain.id) } returns Optional.of(savedEntity)
-//            every { repository.save(changeStatusRemovedEntity) } returns changeStatusRemovedEntity
-//            every { mapper.toDomain(savedEntity) } returns savedDomain
-//            every { mapper.toEntity(savedDomain) } returns savedEntity
-//
-//            adapter.delete(savedEntity.id)
-//
-//            verify { repository.findById(savedDomain.id) }
-//            // H2 DB를 이용한 Status 변화 확인 테스트 코드 필요하다고 생각되는 부분
-//        }
-//    }
+    "[Exception] Create(noContentDomain)" - {
+        val noContentBoard = Board.builder()
+            .title(testTitle)
+            .build()
+
+        "noContentDomain -> Exception(content cannot be null)" - {
+            val result = shouldThrow<NullPointerException> {
+                Objects.requireNonNull(noContentBoard.content, "Board not found")
+            }
+
+            "content 값이 없으므로 Null 에러 발생" {
+                result.message shouldBe "Board not found"
+            }
+        }
+    }
+
+    "[Pass] Update(boardDomain)" - {
+        val editedTitle = "Update Title"
+        val editedContent = "Update Content"
+        val editedStatus = BoardStatus.PENDING
+
+        val board = Board.builder()
+            .title(testTitle)
+            .content(testContent)
+            .status(BoardStatus.ACTIVE)
+            .build()
+
+        val savedBoardEntity = repository.save(mapper.toEntity(board))
+
+        val editedBoard = Board.builder()
+            .id(savedBoardEntity.id)
+            .title(editedTitle)
+            .content(editedContent)
+            .status(editedStatus)
+            .build()
+
+        "savedBoard -> updatedBoard" - {
+            val result = adapter.update(editedBoard)
+
+            "id 값 유지" {
+                result.id shouldBeEqual savedBoardEntity.id
+            }
+
+            "title, content, status 값 변경" {
+                result.title shouldBeEqual editedTitle
+                result.content shouldBeEqual editedContent
+                result.status shouldBeEqual editedStatus
+            }
+
+            "createdAt 값 유지" {
+                result.createdAt shouldBeEqual savedBoardEntity.createdAt
+            }
+
+            "updatedAt 값 변경" {
+                result.updatedAt shouldNotBe  savedBoardEntity.updatedAt
+            }
+        }
+    }
+
+    "[Pass] Delete(id)" - {
+        val board = Board.builder()
+            .title(testTitle)
+            .content(testContent)
+            .status(BoardStatus.ACTIVE)
+            .build()
+
+        val savedBoardEntity = repository.save(mapper.toEntity(board))
+
+        "id -> void" - {
+            adapter.delete(savedBoardEntity.id)
+
+            // NOTE: 실습용으로 2가지 사용 - 의미는 동일
+            "data 존재 확인" {
+                repository.existsById(savedBoardEntity.id) shouldBe false
+                repository.findById(savedBoardEntity.id).isEmpty shouldBe true
+            }
+        }
+    }
 })
