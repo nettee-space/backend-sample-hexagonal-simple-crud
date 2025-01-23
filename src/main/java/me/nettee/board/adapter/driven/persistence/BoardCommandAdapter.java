@@ -19,13 +19,13 @@ public class BoardCommandAdapter implements BoardCommandPort {
 
         @Override
         public Board create(Board board) {
-            var boardEntity = boardEntityMapper.toEntity(board);
-
             // adapter는 시키는거만 해야함.
             // ---> 기획적인게 담기진 않음.
 
             // ACTIVE or PENDING 여부 application layer에서 처리해야함.
             // Null 값이 왔을때 예외처리는 가능.
+
+            var boardEntity = boardEntityMapper.toEntity(board);
 
             return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));
         }
@@ -47,9 +47,8 @@ public class BoardCommandAdapter implements BoardCommandPort {
         @Override
         @Transactional
         public void delete(Long id) {
-            var boardEntity = boardJpaRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("board not found"));
+            if(!boardJpaRepository.existsById(id)) throw new IllegalArgumentException("board not found");
 
-            boardEntity.softDelete();
+            boardJpaRepository.deleteById(id);
         }
 }
