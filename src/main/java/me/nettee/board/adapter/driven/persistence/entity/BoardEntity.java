@@ -15,7 +15,6 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 @Entity(name = "board")
 public class BoardEntity extends BaseTimeEntity {
-
     private String title;
 
     private String content;
@@ -44,9 +43,5 @@ public class BoardEntity extends BaseTimeEntity {
         this.title = title;
         this.content = content;
         this.status = status;
-    }
-
-    public void softDelete() {
-        this.status = BoardStatus.REMOVED;
     }
 }
