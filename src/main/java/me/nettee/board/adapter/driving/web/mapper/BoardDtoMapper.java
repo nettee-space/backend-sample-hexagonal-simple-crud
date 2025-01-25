@@ -5,6 +5,8 @@ import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardUpdateComman
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.application.domain.Board;
+import me.nettee.board.application.model.BoardReadDetailModel;
+import me.nettee.board.application.model.BoardReadSummaryModel;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,8 +25,8 @@ public interface BoardDtoMapper {
     @Mapping(target = "content", source = "command.content")
     Board toDomain(Long id, BoardUpdateCommand command);
 
-    BoardDetailResponse toDtoDetail(Board board);
+    BoardDetailResponse toDtoDetail(BoardReadDetailModel board);
 
-    BoardSummaryResponse toDtoSummary(Board board);
+    BoardSummaryResponse toDtoSummary(BoardReadSummaryModel board);
 
 }

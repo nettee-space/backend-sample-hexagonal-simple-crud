@@ -4,16 +4,13 @@ import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
-import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/boards")
@@ -25,13 +22,15 @@ public class BoardQueryController {
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
-        Board board = boardReadUseCase.getBoard(boardId);
+        var board = boardReadUseCase.getBoard(boardId);
+
         return boardDtoMapper.toDtoDetail(board);
     }
 
     @GetMapping
-    public Page<BoardSummaryResponse> getBoardsByStatuses(Pageable pageable, List<BoardStatus> statuses) {
-        return  boardReadByStatusesUseCase.findByStatuses(pageable, statuses)
-                .map(boardDtoMapper::toDtoSummary);
+    public Page<BoardSummaryResponse> getBoardsByStatuses(@RequestParam Set<BoardStatus> statuses, Pageable pageable) {
+        var board = boardReadByStatusesUseCase.findByStatuses(statuses, pageable);
+
+        return board.map(boardDtoMapper::toDtoSummary);
     }
 }
