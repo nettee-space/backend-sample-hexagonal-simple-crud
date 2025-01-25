@@ -10,7 +10,6 @@ public record BoardReadDetailModel(
         String content,
         BoardStatus status,
         Instant createdAt,
-        Instant updatedAt,
-        Instant deletedAt
+        Instant updatedAt
 ) {
 }
