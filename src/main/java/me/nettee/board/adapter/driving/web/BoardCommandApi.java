@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/board")
 @RequiredArgsConstructor
-public class BoardCommandController {
+public class BoardCommandApi {
 
     private final BoardCreateUseCase boardCreateUseCase;
     private final BoardUpdateUseCase boardUpdateUseCase;
