@@ -11,13 +11,6 @@ import java.time.Instant;
 public final class BoardQueryDto {
     private BoardQueryDto() {}
 
-
-    @Builder
-    public record BoardSummaryResponse(
-            BoardReadSummaryModel board
-    ){}
-
-
     @Builder
     public record BoardDetailResponse(
             BoardReadDetailModel board

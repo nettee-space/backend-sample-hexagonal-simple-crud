@@ -1,7 +1,6 @@
 package me.nettee.board.adapter.driving.web
 import io.kotest.core.spec.style.FreeSpec
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
-import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.board.application.model.BoardReadDetailModel
@@ -17,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -31,9 +29,9 @@ import java.time.Instant
 
 
 @ExtendWith(SpringExtension::class)
-@WebMvcTest(BoardQueryController::class)
+@WebMvcTest(BoardQueryApi::class)
 @AutoConfigureMockMvc
-class BoardQueryControllerTest(
+class BoardQueryApiTest(
     @MockitoBean  private val boardReadUseCase : BoardReadUseCase,
     @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUseCase,
     @MockitoBean private val boardDtoMapper : BoardDtoMapper,
@@ -113,7 +111,6 @@ class BoardQueryControllerTest(
             boardReadSummaryModelPage(boardList, pageable, statuses)
         }
         `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
-        `when`(boardDtoMapper.toDtoSummary(any(BoardReadSummaryModel::class.java))).thenAnswer { BoardSummaryResponse(it.getArgument(0) as BoardReadSummaryModel) }
     }
 })
 

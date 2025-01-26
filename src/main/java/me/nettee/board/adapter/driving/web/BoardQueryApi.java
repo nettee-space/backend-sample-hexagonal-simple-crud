@@ -2,9 +2,9 @@ package me.nettee.board.adapter.driving.web;
 
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
-import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardSummaryResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
+import me.nettee.board.application.model.BoardReadSummaryModel;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
-public class BoardQueryController {
+public class BoardQueryApi {
     private final BoardReadUseCase boardReadUseCase;
     private final BoardReadByStatusesUseCase boardReadByStatusesUseCase;
 
@@ -33,9 +33,7 @@ public class BoardQueryController {
     }
 
     @GetMapping
-    public Page<BoardSummaryResponse> getBoardsByStatuses(@RequestParam Set<BoardStatus> statuses, Pageable pageable) {
-        var board = boardReadByStatusesUseCase.findByStatuses(statuses, pageable);
-
-        return board.map(boardDtoMapper::toDtoSummary);
+    public Page<BoardReadSummaryModel> getBoardsByStatuses(@RequestParam Set<BoardStatus> statuses, Pageable pageable) {
+        return boardReadByStatusesUseCase.findByStatuses(statuses, pageable);
     }
 }
