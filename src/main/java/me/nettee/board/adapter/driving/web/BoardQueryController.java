@@ -9,7 +9,11 @@ import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 @RestController
@@ -17,8 +21,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BoardQueryController {
     private final BoardReadUseCase boardReadUseCase;
-    private final BoardDtoMapper boardDtoMapper;
     private final BoardReadByStatusesUseCase boardReadByStatusesUseCase;
+
+    private final BoardDtoMapper boardDtoMapper;
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {

@@ -43,7 +43,6 @@ class BoardQueryControllerTest(
     lateinit var boardList: List<BoardReadSummaryModel>
 
    "[GET]게시판 상세 조회" - {
-
         val mvcGet = fun(boardId: Long): ResultActionsDsl{
             return mvc.get("/api/v1/boards/$boardId") {
                 contentType = MediaType.APPLICATION_JSON
@@ -94,7 +93,7 @@ class BoardQueryControllerTest(
     }
 
     beforeSpec {
-        val boardDetail = BoardReadDetailModel(1L,"title1", "content1", BoardStatus.ACTIVE, Instant.now(), null, null);
+        val boardDetail = BoardReadDetailModel(1L,"title1", "content1", BoardStatus.ACTIVE, Instant.now(), null);
         // list 반복문 완성 코드 ***
         boardList = (1..14).flatMap {
             listOf(
@@ -105,7 +104,6 @@ class BoardQueryControllerTest(
 
         `when` (boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
         `when`(boardReadUseCase.getBoard(argThat { it != 1L })).thenThrow(ResponseStatusException(HttpStatus.NOT_FOUND))
-
         `when`(boardReadByStatusesUseCase.findByStatuses(
             any<Set<BoardStatus>>(),
             any<Pageable>()
@@ -114,33 +112,10 @@ class BoardQueryControllerTest(
             val pageable = invocation.getArgument<Pageable>(1)
             boardReadSummaryModelPage(boardList, pageable, statuses)
         }
-
-        `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(mapBoardDetailResponse(boardDetail))
-        `when`(boardDtoMapper.toDtoSummary(any(BoardReadSummaryModel::class.java))).thenAnswer { mapToBoardSummaryResponse(it.getArgument(0) as BoardReadSummaryModel) }
-
+        `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
+        `when`(boardDtoMapper.toDtoSummary(any(BoardReadSummaryModel::class.java))).thenAnswer { BoardSummaryResponse(it.getArgument(0) as BoardReadSummaryModel) }
     }
-
 })
-
-fun mapToBoardSummaryResponse(board: BoardReadSummaryModel): BoardSummaryResponse {
-    return BoardSummaryResponse.builder()
-        .id(board.id)
-        .title(board.title)
-        .status(board.status)
-        .createdAt(board.createdAt)
-        .build()
-}
-
-fun mapBoardDetailResponse(board: BoardReadDetailModel): BoardDetailResponse {
-    return BoardDetailResponse.builder()
-        .id(board.id)
-        .title(board.title)
-        .content(board.content)
-        .status(board.status)
-        .createdAt(board.createdAt)
-        .updatedAt(board.updatedAt)
-        .build()
-}
 
 fun boardReadSummaryModelPage(
     boardList: List<BoardReadSummaryModel>,
