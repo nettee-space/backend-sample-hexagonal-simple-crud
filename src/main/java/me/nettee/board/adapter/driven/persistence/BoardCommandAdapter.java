@@ -13,18 +13,11 @@ import java.time.Instant;
 @Repository
 @RequiredArgsConstructor
 public class BoardCommandAdapter implements BoardCommandPort {
-
         private final BoardJpaRepository boardJpaRepository;
         private final BoardEntityMapper boardEntityMapper;
 
         @Override
         public Board create(Board board) {
-            // adapter는 시키는거만 해야함.
-            // ---> 기획적인게 담기진 않음.
-
-            // ACTIVE or PENDING 여부 application layer에서 처리해야함.
-            // Null 값이 왔을때 예외처리는 가능.
-
             var boardEntity = boardEntityMapper.toEntity(board);
 
             return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));

@@ -22,7 +22,6 @@ public class BoardEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BoardStatus status;
 
-
     @Builder
     public BoardEntity(String title, String content, BoardStatus status) {
         this.title = title;
