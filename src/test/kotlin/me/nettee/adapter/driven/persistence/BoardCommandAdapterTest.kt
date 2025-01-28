@@ -13,7 +13,6 @@ import me.nettee.core.jpa.JpaTransactionalFreeSpec
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.ComponentScan
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @DataJpaTest
@@ -67,9 +66,7 @@ class BoardCommandAdapterTest(
             .build()
 
         "noTitleDomain -> Exception(title cannot be null)" - {
-
             val result = shouldThrow<NullPointerException> {
-                // 실질적으로는 Board,BoardEntity 를 처리하는 로직을 담아야하는게 아닌가?
                 Objects.requireNonNull(noTitleBoard.title, "Board not found")
             }
 
@@ -99,28 +96,27 @@ class BoardCommandAdapterTest(
         val editedTitle = "Update Title"
         val editedContent = "Update Content"
         val editedStatus = BoardStatus.PENDING
-
         val board = Board.builder()
             .title(testTitle)
             .content(testContent)
             .status(BoardStatus.ACTIVE)
             .build()
 
-        val savedBoardEntity = repository.save(mapper.toEntity(board))
+        val savedId = repository.save(mapper.toEntity(board)).id
+        val originBoardEntity = repository.findById(savedId).get()
 
         val editedBoard = Board.builder()
-            .id(savedBoardEntity.id)
+            .id(savedId)
             .title(editedTitle)
             .content(editedContent)
             .status(editedStatus)
             .build()
 
-        "savedBoard -> updatedBoard" - {
-
+        "수정할 Board -> 수정된 Board" - {
             val result = adapter.update(editedBoard)
 
             "id 값 유지" {
-                result.id shouldBeEqual savedBoardEntity.id
+                result.id shouldBeEqual savedId
             }
 
             "title, content, status 값 변경" {
@@ -130,11 +126,11 @@ class BoardCommandAdapterTest(
             }
 
             "createdAt 값 유지" {
-                result.createdAt.truncatedTo(ChronoUnit.MILLIS) shouldBeEqual savedBoardEntity.createdAt.truncatedTo(ChronoUnit.MILLIS)
+                result.createdAt shouldBeEqual originBoardEntity.createdAt
             }
 
             "updatedAt 값 변경" {
-                result.updatedAt shouldNotBe  savedBoardEntity.updatedAt
+                result.updatedAt shouldNotBe  originBoardEntity.updatedAt
             }
         }
     }
