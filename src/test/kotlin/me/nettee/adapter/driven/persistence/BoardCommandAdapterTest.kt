@@ -159,6 +159,3 @@ class BoardCommandAdapterTest(
         }
     }
 })
-//{
-//    override fun extensions() =listOf(SpringExtension)
-//}
