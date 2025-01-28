@@ -1,29 +1,27 @@
 package me.nettee.adapter.driven.persistence
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.types.shouldBeSameInstanceAs
 import me.nettee.board.adapter.driven.persistence.BoardCommandAdapter
 import me.nettee.board.adapter.driven.persistence.BoardJpaRepository
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
+import me.nettee.core.jpa.JpaTransactionalFreeSpec
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.ComponentScan
-import java.util.Objects
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ComponentScan(basePackageClasses = [BoardEntityMapper::class])
 class BoardCommandAdapterTest(
     @Autowired private val repository: BoardJpaRepository,
     @Autowired private val mapper : BoardEntityMapper
-) : FreeSpec({
+) : JpaTransactionalFreeSpec({
     val adapter = BoardCommandAdapter(repository, mapper)
     val testTitle = "Test Title"
     val testContent = "Test Content"
@@ -118,6 +116,7 @@ class BoardCommandAdapterTest(
             .build()
 
         "savedBoard -> updatedBoard" - {
+
             val result = adapter.update(editedBoard)
 
             "id 값 유지" {
@@ -131,7 +130,7 @@ class BoardCommandAdapterTest(
             }
 
             "createdAt 값 유지" {
-                result.createdAt shouldBeEqual savedBoardEntity.createdAt
+                result.createdAt.truncatedTo(ChronoUnit.MILLIS) shouldBeEqual savedBoardEntity.createdAt.truncatedTo(ChronoUnit.MILLIS)
             }
 
             "updatedAt 값 변경" {
@@ -160,3 +159,6 @@ class BoardCommandAdapterTest(
         }
     }
 })
+//{
+//    override fun extensions() =listOf(SpringExtension)
+//}
