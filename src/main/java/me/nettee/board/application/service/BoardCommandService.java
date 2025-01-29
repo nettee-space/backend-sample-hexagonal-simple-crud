@@ -2,7 +2,9 @@ package me.nettee.board.application.service;
 
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.Board;
+import me.nettee.board.application.model.BoardReadDetailModel;
 import me.nettee.board.application.port.BoardCommandPort;
+import me.nettee.board.application.port.BoardQueryPort;
 import me.nettee.board.application.usecase.BoardCreateUseCase;
 import me.nettee.board.application.usecase.BoardDeleteUseCase;
 import me.nettee.board.application.usecase.BoardUpdateUseCase;
@@ -23,6 +25,11 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
     }
 
     public void deleteBoard(Long id) {
-        boardCommandPort.delete(id);
+        Board board = boardCommandPort.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        board.softDelete();
+
+        boardCommandPort.delete(board);
     }
 }

@@ -12,15 +12,15 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BoardDtoMapper {
 
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "title", source = "title")
-    @Mapping(target = "content", source = "content")
+//    @BeanMapping(ignoreByDefault = true)
+//    @Mapping(target = "title", source = "title")
+//    @Mapping(target = "content", source = "content")
     Board toDomain(BoardCreateCommand command);
 
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "title", source = "command.title")
-    @Mapping(target = "content", source = "command.content")
+//    @BeanMapping(ignoreByDefault = true)
+//    @Mapping(target = "id", source = "id")
+//    @Mapping(target = "title", source = "command.title")
+//    @Mapping(target = "content", source = "command.content")
     Board toDomain(Long id, BoardUpdateCommand command);
 
     BoardDetailResponse toDtoDetail(BoardReadDetailModel board);
