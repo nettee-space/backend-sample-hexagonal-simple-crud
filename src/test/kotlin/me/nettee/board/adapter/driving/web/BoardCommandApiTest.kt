@@ -24,16 +24,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.*
 
 @ExtendWith(SpringExtension::class)
-@WebMvcTest(BoardCommandController::class)
+@WebMvcTest(BoardCommandApi::class)
 @AutoConfigureMockMvc
-class BoardCommandControllerTest(
+class BoardCommandApiTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val objectMapper: ObjectMapper,
-    @MockitoBean private val boardCreateUseCase : BoardCreateUseCase,
-    @MockitoBean private val boardUpdateUseCase : BoardUpdateUseCase,
-    @MockitoBean private val boardDeleteUseCase : BoardDeleteUseCase,
-    @MockitoBean private val boardDtoMapper : BoardDtoMapper
-): FreeSpec({
+    @MockitoBean private val boardCreateUseCase: BoardCreateUseCase,
+    @MockitoBean private val boardUpdateUseCase: BoardUpdateUseCase,
+    @MockitoBean private val boardDeleteUseCase: BoardDeleteUseCase,
+    @MockitoBean private val boardDtoMapper: BoardDtoMapper
+) : FreeSpec({
 
     // given
     val boardDomain = Board.builder().id(1L).title("테스트게시판").content("테스트게시판내용").status(BoardStatus.ACTIVE).build()
@@ -57,7 +57,7 @@ class BoardCommandControllerTest(
 
             "2xx 응답 상태 반환" {
                 // then
-                mvcRequest(HttpMethod.POST, "/api/v1/board", emptyMap(), createCommand)
+                mvcRequest(HttpMethod.POST, "/api/v1/boards", emptyMap(), createCommand)
                     .andExpect {
                         status { is2xxSuccessful() }
                         jsonPath("board.id") { value(boardCreateResponse.id) }
@@ -75,7 +75,7 @@ class BoardCommandControllerTest(
 
             // then
             "4xx 응답 상태 반환" {
-                mvcRequest(HttpMethod.POST, "/api/v1/board", emptyMap(), failCreateCommand)
+                mvcRequest(HttpMethod.POST, "/api/v1/boards", emptyMap(), failCreateCommand)
                     .andExpect {
                         status { is4xxClientError() }
                     }
@@ -90,7 +90,7 @@ class BoardCommandControllerTest(
 
             // then
             "4xx 응답 상태 반환" {
-                mvcRequest(HttpMethod.POST, "/api/v1/board", emptyMap(), failCreateCommand)
+                mvcRequest(HttpMethod.POST, "/api/v1/boards", emptyMap(), failCreateCommand)
                     .andExpect {
                         status { is4xxClientError() }
                     }
@@ -111,7 +111,7 @@ class BoardCommandControllerTest(
 
             "2xx 정상 상태 반환" {
                 // then
-                mvcRequest(HttpMethod.PATCH, "/api/v1/board/{id}", mapOf("id" to boardUpdateResponse.id), updateCommand)
+                mvcRequest(HttpMethod.PATCH, "/api/v1/boards/{id}", mapOf("id" to boardUpdateResponse.id), updateCommand)
                     .andExpect {
                         status { is2xxSuccessful() }
                         jsonPath("board.id") { value(boardUpdateResponse.id) }
@@ -129,7 +129,12 @@ class BoardCommandControllerTest(
 
             "4xx 응답 상태 반환" {
                 // then
-                mvcRequest(HttpMethod.PATCH, "/api/v1/board/{id}", mapOf("id" to boardUpdateResponse.id), failUpdateCommand)
+                mvcRequest(
+                    HttpMethod.PATCH,
+                    "/api/v1/boards/{id}",
+                    mapOf("id" to boardUpdateResponse.id),
+                    failUpdateCommand
+                )
                     .andExpect {
                         status { is4xxClientError() }
                     }
@@ -144,7 +149,12 @@ class BoardCommandControllerTest(
 
             "4xx 응답 상태 반환" {
                 // then
-                mvcRequest(HttpMethod.PATCH, "/api/v1/board/{id}", mapOf("id" to boardUpdateResponse.id), failUpdateCommand)
+                mvcRequest(
+                    HttpMethod.PATCH,
+                    "/api/v1/boards/{id}",
+                    mapOf("id" to boardUpdateResponse.id),
+                    failUpdateCommand
+                )
                     .andExpect {
                         status { is4xxClientError() }
                     }
@@ -157,22 +167,18 @@ class BoardCommandControllerTest(
     "[DELETE] 게시판 삭제 요청" - {
         "[정상 요청] 해당 커뮤니티 게시판 ID가 존재 할 때" - {
             "2xx 응답 상태 반환" {
-                mvcRequest(HttpMethod.DELETE, "/api/v1/board/{id}", mapOf("id" to boardDomain.id), null)
-                .andExpect {
-                    status { is2xxSuccessful() }
-                }
+                mvcRequest(HttpMethod.DELETE, "/api/v1/boards/{id}", mapOf("id" to boardDomain.id), null)
+                    .andExpect {
+                        status { is2xxSuccessful() }
+                    }
             }
-        }
-
-        "[실패 요청] 해당 커뮤니티 게시판 ID 미존재 할 때" - {
-
         }
     }
 
     beforeSpec {
-        `when` (boardDtoMapper.toDomain(any())).thenReturn(boardDomain)
-        `when` (boardCreateUseCase.createBoard(any())).thenReturn(boardDomain)
-        `when` (boardUpdateUseCase.updateBoard(any())).thenReturn(boardDomain)
+        `when`(boardDtoMapper.toDomain(any())).thenReturn(boardDomain)
+        `when`(boardCreateUseCase.createBoard(any())).thenReturn(boardDomain)
+        `when`(boardUpdateUseCase.updateBoard(any())).thenReturn(boardDomain)
         doNothing().`when`(boardDeleteUseCase).deleteBoard(any())
     }
 })

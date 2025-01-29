@@ -1,4 +1,5 @@
 package me.nettee.board.adapter.driving.web
+
 import io.kotest.core.spec.style.FreeSpec
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
@@ -32,16 +33,16 @@ import java.time.Instant
 @WebMvcTest(BoardQueryApi::class)
 @AutoConfigureMockMvc
 class BoardQueryApiTest(
-    @MockitoBean  private val boardReadUseCase : BoardReadUseCase,
-    @MockitoBean private val boardReadByStatusesUseCase : BoardReadByStatusesUseCase,
-    @MockitoBean private val boardDtoMapper : BoardDtoMapper,
+    @MockitoBean private val boardReadUseCase: BoardReadUseCase,
+    @MockitoBean private val boardReadByStatusesUseCase: BoardReadByStatusesUseCase,
+    @MockitoBean private val boardDtoMapper: BoardDtoMapper,
     @Autowired private val mvc: MockMvc
 ) : FreeSpec({
 
     lateinit var boardList: List<BoardReadSummaryModel>
 
-   "[GET]게시판 상세 조회" - {
-        val mvcGet = fun(boardId: Long): ResultActionsDsl{
+    "[GET]게시판 상세 조회" - {
+        val mvcGet = fun(boardId: Long): ResultActionsDsl {
             return mvc.get("/api/v1/boards/$boardId") {
                 contentType = MediaType.APPLICATION_JSON
             }
@@ -56,7 +57,7 @@ class BoardQueryApiTest(
 
         "[4xx] 비정상 요청 상태 반환" {
             mvcGet(200L)
-                .andExpect { status{is4xxClientError()}}
+                .andExpect { status { is4xxClientError() } }
                 .andDo { print() }
                 .andReturn()
         }
@@ -64,7 +65,7 @@ class BoardQueryApiTest(
     }
 
     "[GET] statuses 사용 게시판 목록 조회" - {
-        val mvcGet = fun(statuses: Set<BoardStatus>, page: Int): ResultActionsDsl{
+        val mvcGet = fun(statuses: Set<BoardStatus>, page: Int): ResultActionsDsl {
             return mvc.get("/api/v1/boards") {
                 queryParam("statuses", statuses.joinToString(",") { it.name })
                 queryParam("page", page.toString())
@@ -82,30 +83,52 @@ class BoardQueryApiTest(
         }
 
         "[4xx] 비정상 요청 상태 반환" {
-            val statuses = setOf( BoardStatus.REMOVED, BoardStatus.ACTIVE)
-             mvcGet(statuses, 100)
+            val statuses = setOf(BoardStatus.REMOVED, BoardStatus.ACTIVE)
+            mvcGet(statuses, 100)
                 .andExpect { status { is4xxClientError() } }
                 .andDo { print() }
                 .andReturn()
         }
     }
 
+    var boardReadSummaryModelPage: (
+        List<BoardReadSummaryModel>,
+        Pageable,
+        Set<BoardStatus>
+    ) -> Page<BoardReadSummaryModel>
+
     beforeSpec {
-        val boardDetail = BoardReadDetailModel(1L,"title1", "content1", BoardStatus.ACTIVE, Instant.now(), null);
+        boardReadSummaryModelPage = { boardList, pageable, boardStatus ->
+//            val filteredBoards = boardList.filter { it.status in boardStatus }
+            val filteredBoards = boardList
+                .takeIf { it.isNotEmpty() }
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+
+            val pageContent = filteredBoards.drop(pageable.pageNumber * pageable.pageSize)
+                .take(pageable.pageSize)
+                .takeIf { it.isNotEmpty() }
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+
+            PageImpl(pageContent, pageable, filteredBoards.size.toLong())
+        }
+
+        val boardDetail = BoardReadDetailModel(1L, "title1", "content1", BoardStatus.ACTIVE, Instant.now(), Instant.now(), null)
         // list 반복문 완성 코드 ***
         boardList = (1..14).flatMap {
             listOf(
-                BoardReadSummaryModel(it.toLong(), "title$it", "content$it", BoardStatus.ACTIVE, Instant.now(), null),
-                BoardReadSummaryModel(it.toLong(), "title$it", "content$it", BoardStatus.SUSPENDED, Instant.now(), null)
+                BoardReadSummaryModel(it.toLong(), "title$it", "content$it",  Instant.now(), Instant.now()),
+                BoardReadSummaryModel(it.toLong(), "title$it", "content$it",  Instant.now(), Instant.now())
             )
         }
 
-        `when` (boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
+        `when`(boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
         `when`(boardReadUseCase.getBoard(argThat { it != 1L })).thenThrow(ResponseStatusException(HttpStatus.NOT_FOUND))
-        `when`(boardReadByStatusesUseCase.findByStatuses(
-            any<Set<BoardStatus>>(),
-            any<Pageable>()
-        )).thenAnswer { invocation ->
+        `when`(
+            boardReadByStatusesUseCase.findByStatuses(
+                any<Set<BoardStatus>>(),
+                any<Pageable>()
+            )
+        ).thenAnswer { invocation ->
             val statuses = invocation.getArgument<Set<BoardStatus>>(0)
             val pageable = invocation.getArgument<Pageable>(1)
             boardReadSummaryModelPage(boardList, pageable, statuses)
@@ -114,23 +137,4 @@ class BoardQueryApiTest(
     }
 })
 
-fun boardReadSummaryModelPage(
-    boardList: List<BoardReadSummaryModel>,
-    pageable: Pageable,
-    boardStatus: Set<BoardStatus>
-): Page<BoardReadSummaryModel> {
-    println("Board Statuses: $boardStatus")
-    println("Board List: ${boardList.map { it.status }}")
-
-   val filteredBoards = boardList.filter { it.status in boardStatus }
-       .takeIf { it.isNotEmpty() }
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-
-    val pageContent = filteredBoards.drop(pageable.pageNumber * pageable.pageSize)
-        .take(pageable.pageSize)
-        .takeIf { it.isNotEmpty() }
-        ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
-
-    return PageImpl(pageContent, pageable, filteredBoards.size.toLong())
-}
 

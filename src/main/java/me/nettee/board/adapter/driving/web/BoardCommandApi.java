@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/board")
+@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 public class BoardCommandApi {
 
