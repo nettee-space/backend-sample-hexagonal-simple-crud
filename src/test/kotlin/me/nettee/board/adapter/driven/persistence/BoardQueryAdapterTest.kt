@@ -17,15 +17,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import java.time.Instant
 
 @ComponentScan(basePackageClasses = [BoardEntityMapper::class])
-@DataJpaTest // 데이터베이스와의 상호작용을 테스트할 수 있도록 서포트
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableJpaAuditing
 class BoardQueryAdapterSpringBootTest (
-        @Autowired private val boardJpaRepository: BoardJpaRepository,
-        @Autowired private val boardEntityMapper: BoardEntityMapper,
-        @Autowired private val entityManager: EntityManager,
+        @Autowired private val boardJpaRepository : BoardJpaRepository,
+        @Autowired private val boardEntityMapper : BoardEntityMapper,
+        @Autowired private val entityManager : EntityManager,
 ) : FreeSpec({
-    val boardQueryAdapter = BoardQueryAdapter(boardEntityMapper);
+    val boardQueryAdapter = BoardQueryAdapter(boardEntityMapper)
 
     boardQueryAdapter.setEntityManager(entityManager)
 
@@ -38,7 +38,7 @@ class BoardQueryAdapterSpringBootTest (
             .build()
 
     beforeSpec {
-        boardJpaRepository.save(boardEntity);
+        boardJpaRepository.save(boardEntity)
     }
 
     beforeEach {
@@ -64,75 +64,67 @@ class BoardQueryAdapterSpringBootTest (
     }
 
     "[Read] 게시글 목록 조회" - { // RootNode
-        // Given: 여러 게시물을 저장
-        boardJpaRepository.saveAll(
+        // Given: 여러 게시물들을 저장
+        val boardEnties =
+                (1..5).flatMap {
                 listOf(
                         BoardEntity.builder()
-                                .title("제목1")
-                                .content("내용1")
+                                .title("title$it")
+                                .content("content$it")
                                 .status(BoardStatus.ACTIVE)
-                                .createdAt(Instant.now())
-                                .updatedAt(Instant.now())
-                                .build(),
-                        BoardEntity.builder()
-                                .title("제목2")
-                                .content("내용2")
-                                .status(BoardStatus.ACTIVE)
-                                .createdAt(Instant.now())
-                                .updatedAt(Instant.now())
                                 .build()
-                )
+                    )
+                }
+        boardJpaRepository.saveAll(
+            boardEnties
         )
         "[정상] 게시글이 존재할 때" - {
             // When: 게시글 목록 조회
             val pageable: Pageable = PageRequest.of(0, 10)
             val fetchedBoards = boardQueryAdapter.findAll(pageable)
+            val expectedSize = boardEnties.size
 
             "[검증1] 게시글들이 존재하는지 검증" {
                 fetchedBoards.hasContent() shouldBe true
             }
 
             "[검증2] 조회된 게시글 수를 검증" {
-                fetchedBoards.content.size shouldBe 2
+                fetchedBoards.content.size shouldBe expectedSize
             }
         }
     }
 
     "[Read] 특정 상태 목록으로 게시글 목록을 조회" - {
         // Given: 특정 상태에 해당하는 게시글 저장
-        boardJpaRepository.saveAll(
-            listOf(
+        val boardEntities = listOf(
                 BoardEntity.builder()
                         .title("게시글 1")
                         .content("내용 1")
                         .status(BoardStatus.ACTIVE)
-                        .createdAt(Instant.now())
-                        .updatedAt(Instant.now())
                         .build(),
                 BoardEntity.builder()
                         .title("게시글 2")
                         .content("내용 2")
                         .status(BoardStatus.PENDING)
-                        .createdAt(Instant.now())
-                        .updatedAt(Instant.now())
                         .build(),
                 BoardEntity.builder()
                         .title("게시글 3")
                         .content("내용 3")
                         .status(BoardStatus.ACTIVE)
-                        .createdAt(Instant.now())
-                        .updatedAt(Instant.now())
                         .build()
-            )
+        )
+        boardJpaRepository.saveAll(
+            boardEntities
         )
 
         // When: 특정 상태 목록으로 게시글을 조회
         val statuses = listOf(BoardStatus.ACTIVE, BoardStatus.PENDING)
         val pageable = PageRequest.of(0, 10)
         val page = boardQueryAdapter.findByStatusesList(pageable, statuses)
+        val expectedSize = boardEntities.size
 
         "[검증1] 필터링된 게시글 총 개수를 검증" {
-            page.totalElements shouldBe 3
+            page.totalElements shouldBe expectedSize
         }
 
         "[검증2] 필터링된 게시글의 상태를 검증" {
