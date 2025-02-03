@@ -65,6 +65,7 @@ dependencies {
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
+
     // lombok test
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
@@ -77,8 +78,6 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("script-runtime"))
-    testCompileOnly("org.projectlombok:lombok") // 테스트 의존성 추가
-    testAnnotationProcessor("org.projectlombok:lombok") // 테스트 의존성 추가
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 }
 
