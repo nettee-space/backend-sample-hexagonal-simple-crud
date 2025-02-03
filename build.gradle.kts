@@ -36,6 +36,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // logging
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
@@ -64,7 +65,7 @@ dependencies {
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
-    // test
+
     // lombok test
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
@@ -101,8 +102,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(listOf(
-        "--enable-preview"
-        //"-Amapstruct.defaultComponentModel=spring",
+        "--enable-preview",
+        "-Amapstruct.defaultComponentModel=spring",
     ))
 }
 

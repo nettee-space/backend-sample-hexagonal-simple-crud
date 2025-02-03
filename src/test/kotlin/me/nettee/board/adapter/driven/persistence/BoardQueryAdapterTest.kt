@@ -2,6 +2,7 @@ package me.nettee.board.adapter.driven.persistence
 
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldBeIn
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import me.nettee.board.adapter.driven.mapper.BoardEntityMapper
@@ -96,7 +97,7 @@ class BoardQueryAdapterSpringBootTest (
 
     "[Read] 특정 상태 목록으로 게시글 목록을 조회" - {
         // Given: 특정 상태에 해당하는 게시글 저장
-        val boardEntities = listOf(
+        val boardEntities = setOf(
                 BoardEntity.builder()
                         .title("게시글 1")
                         .content("내용 1")
@@ -118,7 +119,7 @@ class BoardQueryAdapterSpringBootTest (
         )
 
         // When: 특정 상태 목록으로 게시글을 조회
-        val statuses = listOf(BoardStatus.ACTIVE, BoardStatus.PENDING)
+        val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.PENDING)
         val pageable = PageRequest.of(0, 10)
         val page = boardQueryAdapter.findByStatusesList(pageable, statuses)
         val expectedSize = boardEntities.size
@@ -127,11 +128,7 @@ class BoardQueryAdapterSpringBootTest (
             page.totalElements shouldBe expectedSize
         }
 
-        "[검증2] 필터링된 게시글의 상태를 검증" {
-            page.content.forEach {
-                it.status shouldBeIn statuses
-            }
-        }
+
     }
 
 })

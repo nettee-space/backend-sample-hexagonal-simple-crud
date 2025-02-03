@@ -11,9 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import me.nettee.board.application.model.BoardReadDetailModel;
+import me.nettee.board.application.model.BoardReadSummaryModel;
 
-import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public class BoardQueryAdapter extends QuerydslRepositorySupport implements BoardQueryPort {
@@ -26,8 +28,8 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     }
 
     @Override
-    public Optional<Board> findById(Long id) {
-        return boardEntityMapper.toOptionalDomain(
+    public Optional<BoardReadDetailModel> findById(Long id) {
+        return boardEntityMapper.toOptionalBoardReadDetailModel(
                 getQuerydsl().createQuery()
                         .select(boardEntity)
                         .from(boardEntity)
@@ -38,7 +40,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     }
 
     @Override
-    public Page<Board> findAll(Pageable pageable) {
+    public Page<BoardReadDetailModel> findAll(Pageable pageable) {
         // 기본 쿼리 생성
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
@@ -65,14 +67,14 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                 .where();
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(boardEntityMapper::toDomain).toList(),
+                result.stream().map(boardEntityMapper::toBoardReadDetailModel).toList(),
                 pageable,
                 totalCount::fetchOne
         );
     }
 
     @Override
-    public Page<Board> findByStatusesList(Pageable pageable, List<BoardStatus> statuses) {
+    public Page<BoardReadSummaryModel> findByStatusesList(Pageable pageable, java.util.Set<me.nettee.board.application.domain.type.BoardStatus> statuses) {
         // 기본 쿼리 생성
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
@@ -99,7 +101,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                 .where(boardEntity.status.in(statuses));
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(boardEntityMapper::toDomain).toList(),
+                result.stream().map(boardEntityMapper::toBoardReadSummaryModel).toList(),
                 pageable,
                 totalCount::fetchOne
         );

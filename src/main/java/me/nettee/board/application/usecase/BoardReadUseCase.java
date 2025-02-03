@@ -1,11 +1,9 @@
 package me.nettee.board.application.usecase;
 
-import me.nettee.board.application.domain.Board;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import me.nettee.board.application.model.BoardReadDetailModel;
 
 public interface BoardReadUseCase {
-    Board getBoard(Long id);
 
-    Page<Board> findGeneralBy(Pageable pageable);
+   BoardReadDetailModel getBoard(Long id);
+
 }
