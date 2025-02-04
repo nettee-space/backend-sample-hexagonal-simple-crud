@@ -3,41 +3,44 @@ package me.nettee.board.adapter.driven.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import me.nettee.board.application.domain.type.BoardStatus;
+import me.nettee.core.jpa.entity.BaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
+import java.util.Objects;
 
 @Getter
-@Builder(toBuilder = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Entity(name = "board")
-public class BoardEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Column(name = "title", length = 20, nullable = false)
+public class BoardEntity extends BaseTimeEntity {
     private String title;
 
-    @Column(name = "content", length = 300, nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
     private BoardStatus status;
 
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @Builder
+    public BoardEntity(String title, String content, BoardStatus status) {
+        this.title = title;
+        this.content = content;
+        this.status = status;
+    }
 
-    @Column(name = "updated_at")
-    private Instant updatedAt;
+    @Builder(
+            builderClassName = "UpdateBoardBuilder",
+            builderMethodName = "prepareUpdate",
+            buildMethodName = "update"
+    )
+    public void updateBoard(String title, String content, BoardStatus status) {
+        Objects.requireNonNull(title, "title cannot be null");
+        Objects.requireNonNull(content, "content cannot be null");
+        Objects.requireNonNull(status, "status cannot be null");
 
-    // 삭제
-    public void softDelete() {
-        this.updatedAt = Instant.now();
-        this.status = BoardStatus.REMOVED;
+        this.title = title;
+        this.content = content;
+        this.status = status;
     }
 }
