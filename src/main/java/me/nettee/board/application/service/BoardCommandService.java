@@ -2,9 +2,7 @@ package me.nettee.board.application.service;
 
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.Board;
-import me.nettee.board.application.model.BoardReadDetailModel;
 import me.nettee.board.application.port.BoardCommandPort;
-import me.nettee.board.application.port.BoardQueryPort;
 import me.nettee.board.application.usecase.BoardCreateUseCase;
 import me.nettee.board.application.usecase.BoardDeleteUseCase;
 import me.nettee.board.application.usecase.BoardUpdateUseCase;
@@ -30,6 +28,6 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
 
         board.softDelete();
 
-        boardCommandPort.delete(board);
+        boardCommandPort.delete(id);
     }
 }
