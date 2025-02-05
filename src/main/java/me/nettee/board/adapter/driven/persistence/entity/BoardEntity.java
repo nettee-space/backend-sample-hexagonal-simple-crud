@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.core.jpa.entity.BaseTimeEntity;
+import me.nettee.core.jpa.support.BaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Objects;
