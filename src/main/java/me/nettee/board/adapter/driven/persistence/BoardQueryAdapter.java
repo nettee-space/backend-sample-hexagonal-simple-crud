@@ -1,10 +1,7 @@
 package me.nettee.board.adapter.driven.persistence;
 
-import me.nettee.board.adapter.driven.mapper.BoardEntityMapper;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
-import me.nettee.board.adapter.driven.persistence.entity.QBoardEntity;
-import me.nettee.board.application.domain.Board;
-import me.nettee.board.application.domain.type.BoardStatus;
+import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.port.BoardQueryPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,11 +13,13 @@ import me.nettee.board.application.model.BoardReadSummaryModel;
 
 import java.util.Optional;
 
+import static me.nettee.board.adapter.driven.persistence.entity.QBoardEntity.boardEntity;
+
 
 @Repository
 public class BoardQueryAdapter extends QuerydslRepositorySupport implements BoardQueryPort {
+
     private final BoardEntityMapper boardEntityMapper;
-    QBoardEntity boardEntity = QBoardEntity.boardEntity;
 
     public BoardQueryAdapter(BoardEntityMapper boardEntityMapper) {
         super(BoardEntity.class);

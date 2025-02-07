@@ -1,12 +1,10 @@
 package me.nettee.board.adapter.driven.persistence
 
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.collections.shouldBeIn
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
-import me.nettee.board.adapter.driven.mapper.BoardEntityMapper
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity
+import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.type.BoardStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -15,13 +13,12 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
-import java.time.Instant
 
 @ComponentScan(basePackageClasses = [BoardEntityMapper::class])
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableJpaAuditing
-class BoardQueryAdapterSpringBootTest (
+class BoardQueryAdapterTest (
         @Autowired private val boardJpaRepository : BoardJpaRepository,
         @Autowired private val boardEntityMapper : BoardEntityMapper,
         @Autowired private val entityManager : EntityManager,
@@ -34,8 +31,6 @@ class BoardQueryAdapterSpringBootTest (
             .title("제목")
             .content("내용")
             .status(BoardStatus.ACTIVE)
-            .createdAt(Instant.now())
-            .updatedAt(Instant.now())
             .build()
 
     beforeSpec {
@@ -79,6 +74,7 @@ class BoardQueryAdapterSpringBootTest (
         boardJpaRepository.saveAll(
             boardEnties
         )
+
         "[정상] 게시글이 존재할 때" - {
             // When: 게시글 목록 조회
             val pageable: Pageable = PageRequest.of(0, 10)
@@ -127,8 +123,5 @@ class BoardQueryAdapterSpringBootTest (
         "[검증1] 필터링된 게시글 총 개수를 검증" {
             page.totalElements shouldBe expectedSize
         }
-
-
     }
-
 })

@@ -11,5 +11,5 @@ public interface BoardCommandPort {
 
     Board update(Board board);
 
-    void delete(Board id);
+    void delete(Long id);
 }

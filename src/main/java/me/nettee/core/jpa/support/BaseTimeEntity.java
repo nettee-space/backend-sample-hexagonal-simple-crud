@@ -1,4 +1,4 @@
-package me.nettee.core.jpa.entity;
+package me.nettee.core.jpa.support;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
