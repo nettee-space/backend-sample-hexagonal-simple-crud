@@ -91,7 +91,7 @@ class BoardQueryAdapterSpringBootTest(
 
     "[Read] 특정 상태 목록으로 게시글 목록을 조회" - {
         // Given: 특정 상태에 해당하는 게시글 저장
-        val boardEntities = ((1..3).flatMap {
+        val boardEntities = (1..3).flatMap {
             listOf(
                 BoardEntity.builder()
                     .title("게시글 $it")
@@ -99,7 +99,7 @@ class BoardQueryAdapterSpringBootTest(
                     .status(if (it % 2 == 0) { BoardStatus.ACTIVE } else { BoardStatus.PENDING })
                     .build()
             )
-        })
+        }
 
         boardJpaRepository.saveAll(
             boardEntities
