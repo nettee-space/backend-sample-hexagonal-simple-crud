@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 public interface BoardQueryPort {
 
     Optional<BoardReadDetailModel> findById(Long id);
-    Page<BoardReadDetailModel> findAll(Pageable pageable);
+    Page<BoardReadSummaryModel> findAll(Pageable pageable);
     Page<BoardReadSummaryModel> findByStatusesList(Pageable pageable, Set<BoardStatus> statuses);
 
 }
