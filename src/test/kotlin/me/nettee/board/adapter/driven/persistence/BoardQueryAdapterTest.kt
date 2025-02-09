@@ -59,7 +59,7 @@ class BoardQueryAdapterSpringBootTest(
 
     "[Read] 게시글 목록 조회" - { // RootNode
         // Given: 여러 게시물들을 저장
-        val boardEnties = (1..5).flatMap {
+        val boardEntities = (1..5).flatMap {
             listOf(
                 BoardEntity.builder()
                     .title("title$it")
@@ -70,14 +70,14 @@ class BoardQueryAdapterSpringBootTest(
         }
 
         boardJpaRepository.saveAll(
-            boardEnties
+            boardEntities
         )
 
         "[정상] 게시글이 존재할 때" - {
             // When: 게시글 목록 조회
             val pageable: Pageable = PageRequest.of(0, 10)
             val fetchedBoards = boardQueryAdapter.findAll(pageable)
-            val expectedSize = boardEnties.size
+            val expectedSize = boardEntities.size
 
             "[검증1] 게시글들이 존재하는지 검증" {
                 fetchedBoards.hasContent() shouldBe true
