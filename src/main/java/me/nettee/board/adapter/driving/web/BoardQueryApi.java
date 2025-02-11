@@ -23,17 +23,17 @@ public class BoardQueryApi {
     private final BoardReadUseCase boardReadUseCase;
     private final BoardReadByStatusesUseCase boardReadByStatusesUseCase;
 
-    private final BoardDtoMapper boardDtoMapper;
+    private final BoardDtoMapper mapper;
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
         var board = boardReadUseCase.getBoard(boardId);
 
-        return boardDtoMapper.toDtoDetail(board);
+        return mapper.toDtoDetail(board);
     }
 
     @GetMapping
-    public Page<BoardReadSummaryModel> getBoardsByStatuses(@RequestParam Set<BoardStatus> statuses, Pageable pageable) {
+    public Page<BoardReadSummaryModel> getBoardsByStatuses(@RequestParam(defaultValue = "ACTIVE,SUSPENDED") Set<BoardStatus> statuses, Pageable pageable) {
         return boardReadByStatusesUseCase.findByStatuses(statuses, pageable);
     }
 }
