@@ -1,5 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     java
@@ -58,17 +58,19 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
-    // Querydsl
+    // jackson
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
+
+    // querydsl
     implementation("com.querydsl:querydsl-jpa:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
     annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 
-    // JUnit
+    // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    // test database
     testImplementation("com.h2database:h2")
+
     // test tool
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.mockk:mockk:1.13.12")

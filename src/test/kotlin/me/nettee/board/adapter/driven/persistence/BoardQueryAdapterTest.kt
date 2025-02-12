@@ -3,8 +3,8 @@ package me.nettee.board.adapter.driven.persistence
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
-import me.nettee.board.adapter.driven.mapper.BoardEntityMapper
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity
+import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.type.BoardStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -12,15 +12,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @ComponentScan(basePackageClasses = [BoardEntityMapper::class])
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class BoardQueryAdapterSpringBootTest(
-    @Autowired private val boardJpaRepository : BoardJpaRepository,
-    @Autowired private val boardEntityMapper : BoardEntityMapper,
-    @Autowired private val entityManager : EntityManager
-): FreeSpec({
+@EnableJpaAuditing
+class BoardQueryAdapterTest (
+        @Autowired private val boardJpaRepository : BoardJpaRepository,
+        @Autowired private val boardEntityMapper : BoardEntityMapper,
+        @Autowired private val entityManager : EntityManager,
+) : FreeSpec({
     val boardQueryAdapter = BoardQueryAdapter(boardEntityMapper)
 
     boardQueryAdapter.setEntityManager(entityManager)

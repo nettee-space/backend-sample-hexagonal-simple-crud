@@ -1,8 +1,6 @@
 package me.nettee.board.adapter.driven.persistence.entity;
 
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.Objects;
@@ -11,14 +9,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.core.jpa.entity.BaseTimeEntity;
+import me.nettee.core.jpa.support.BaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
 @Entity(name = "board")
 public class BoardEntity extends BaseTimeEntity {
     private String title;
