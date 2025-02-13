@@ -1,13 +1,12 @@
 package me.nettee.board.adapter.driven.persistence;
+
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.domain.Board;
+import me.nettee.board.application.exception.BoardCommandErrorCode;
 import me.nettee.board.application.port.BoardCommandPort;
 import org.springframework.stereotype.Repository;
-import me.nettee.board.application.exception.BoardCommandErrorCode;
-import java.lang.reflect.Field;
-import jakarta.persistence.Column;
-import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 @Repository
@@ -17,50 +16,28 @@ public class BoardCommandAdapter implements BoardCommandPort {
     private final BoardJpaRepository boardJpaRepository;
     private final BoardEntityMapper boardEntityMapper;
 
+    // 2025.02.13 수용님 주석 한번 확인해주세요.
     @Override
     public Optional<Board> findById(Long id) {
-        return Optional.empty();
-    }
+        // Command 가 Master DB 조회를 하기 위함
+        // 추후 Command 와 Query 트랜잭션이 분리되어 Command 는 Master DB Query는 Slave db를 바라볼때
+        // Master DB를 바라보는 조회 영역도 필요함
+        var board = boardJpaRepository.findById(id)
+                .orElseThrow(BoardCommandErrorCode.BOARD_NOT_FOUND::defaultException);
 
-    private boolean isNotNullField(Field field) {
-        return (field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).nullable())
-                || field.isAnnotationPresent(NotNull.class);
-    }
-    private boolean isValidateNotNullFields(Object entity) {
-        for (Field field: entity.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                if (isNotNullField(field) && field.get(entity) == null) {
-                    return false;
-                }
-            } catch (IllegalAccessException e){
-                throw new RuntimeException("필드 접근 실패", e);
-            }
-        }
-        return true;
-    }
-
-    private boolean isValidateType(Object entity) {
-        for (Field field: entity.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                Object value = field.get(entity);
-                if (value != null && !field.getType().isInstance(value)) {
-                    return false;
-                }
-            } catch (IllegalAccessException e){
-                throw new RuntimeException("필드 접근 실패", e);
-            }
-        }
-        return true;
+        return boardEntityMapper.toOptionalDomain(board);
     }
 
     @Override
     public Board create(Board board) {
         var boardEntity = boardEntityMapper.toEntity(board);
-        if (boardJpaRepository.existsById(boardEntity.getId())) throw BoardCommandErrorCode.DEFAULT.defaultException(); //키값 중복 확인
-        if (!isValidateNotNullFields(boardEntity)) throw BoardCommandErrorCode.DEFAULT.defaultException(); //Not null대상이 null인지 확인
-        if (!isValidateType(boardEntity)) throw BoardCommandErrorCode.DEFAULT.defaultException(); //Type확인
+
+        // 키 값 중복은 DBMS에서 에러를 던지기도 하지만
+        // CustomException RestControllerAdvice 로 Client 에게 던져야 한다면 하기와 같이 처리
+        if(boardJpaRepository.existsById(boardEntity.getId())) {
+            // 이미 존재하는 게시판 입니다. 이라는 구체적인 에러 코드 추가가 필요해보임
+            throw BoardCommandErrorCode.DEFAULT.defaultException();
+        }
 
         return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));
     }
@@ -69,9 +46,6 @@ public class BoardCommandAdapter implements BoardCommandPort {
     public Board update(Board board) {
         var existBoard = boardJpaRepository.findById(board.getId())
                 .orElseThrow(BoardCommandErrorCode.BOARD_NOT_FOUND::defaultException);
-        if (!isValidateNotNullFields(existBoard)) throw BoardCommandErrorCode.DEFAULT.defaultException(); //Not null대상이 null인지 확인
-        if (!isValidateType(existBoard)) throw BoardCommandErrorCode.DEFAULT.defaultException(); //Type확인
-        //createAt은 아래에 아예 업데이트를 하지 않기 때문에 추가로 exception을 하지 않았습니다.
 
         existBoard.prepareUpdate()
                 .title(board.getTitle())
@@ -82,10 +56,12 @@ public class BoardCommandAdapter implements BoardCommandPort {
         return boardEntityMapper.toDomain(boardJpaRepository.save(existBoard));
     }
 
+    // PORT 부분에서 소프트 딜리트에 대한 정책 결정이 필요
     @Override
     public void delete(Long id) {
-            if(!boardJpaRepository.existsById(id)) throw BoardCommandErrorCode.BOARD_NOT_FOUND.defaultException(); //id 존재여부 확인
+        if(!boardJpaRepository.existsById(id))
+            throw BoardCommandErrorCode.BOARD_NOT_FOUND.defaultException(); //id 존재여부 확인
 
-            boardJpaRepository.deleteById(id);
+        boardJpaRepository.deleteById(id);
     }
 }
