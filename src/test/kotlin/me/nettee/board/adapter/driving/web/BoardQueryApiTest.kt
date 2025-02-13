@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.get
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
-
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(BoardQueryApi::class)
 @AutoConfigureMockMvc
@@ -61,7 +60,6 @@ class BoardQueryApiTest(
                 .andDo { print() }
                 .andReturn()
         }
-
     }
 
     "[GET] statuses 사용 게시판 목록 조회" - {
@@ -99,7 +97,6 @@ class BoardQueryApiTest(
 
     beforeSpec {
         boardReadSummaryModelPage = { boardList, pageable, boardStatus ->
-//            val filteredBoards = boardList.filter { it.status in boardStatus }
             val filteredBoards = boardList
                 .takeIf { it.isNotEmpty() }
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
