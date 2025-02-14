@@ -4,9 +4,9 @@ import me.nettee.board.application.domain.type.BoardStatus;
 
 import java.time.Instant;
 
-public final class BoardModel {
+public final class BoardQueryModel {
 
-    private BoardModel() {
+    private BoardQueryModel() {
     }
 
     public record BoardDetail(
