@@ -13,13 +13,13 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = exception.getErrorCode();
 
         var responseBody = ApiErrorResponse.builder()
-                .status(errorCode.defaultHttpStatus().value())
+                .status(errorCode.httpStatus().value())
                 .code(errorCode.name())
                 .message(exception.getMessage()) // same to errorCode.defaultMessage
                 .build();
 
         return ResponseEntity
-                .status(errorCode.defaultHttpStatus())
+                .status(errorCode.httpStatus())
                 .body(responseBody);
     }
 }
