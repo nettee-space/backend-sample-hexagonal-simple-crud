@@ -22,6 +22,7 @@ public final class BoardQueryModel {
     public record BoardSummary(
             Long id,
             String title,
+            BoardStatus status,
             Instant createdAt,
             Instant updatedAt
     ) {
