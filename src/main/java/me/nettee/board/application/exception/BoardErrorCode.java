@@ -1,5 +1,8 @@
 package me.nettee.board.application.exception;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Supplier;
 import me.nettee.common.exeption.ErrorCode;
 import org.springframework.http.HttpStatus;
 
@@ -38,5 +41,33 @@ public enum BoardErrorCode implements ErrorCode {
     @Override
     public BoardException exception(Throwable cause) {
         return new BoardException(this, cause);
+    }
+
+    @Override
+    public RuntimeException exception(Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
+        return new BoardException(this);
+    }
+
+    @Override
+    public RuntimeException exception(Runnable runnable, Throwable cause) {
+        if (runnable != null) {
+            runnable.run();
+        }
+        return new BoardException(this, cause);
+    }
+
+    @Override
+    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
+        Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
+        return new BoardException(this, payload);
+    }
+
+    @Override
+    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
+        Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
+        return new BoardException(this, payload, cause);
     }
 }

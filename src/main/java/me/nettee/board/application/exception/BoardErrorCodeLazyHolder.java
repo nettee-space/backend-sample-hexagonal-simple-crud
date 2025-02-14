@@ -1,5 +1,7 @@
 package me.nettee.board.application.exception;
 
+import java.util.Map;
+import java.util.function.Supplier;
 import me.nettee.common.exeption.ErrorCode;
 import org.springframework.http.HttpStatus;
 
@@ -58,5 +60,31 @@ public class BoardErrorCodeLazyHolder implements ErrorCode {
     @Override
     public RuntimeException exception(Throwable cause) {
         return new BoardException(this, cause);
+    }
+
+    @Override
+    public RuntimeException exception(Runnable runnable) {
+        if (runnable != null) {
+            runnable.run();
+        }
+        return new BoardException(this);
+    }
+
+    @Override
+    public RuntimeException exception(Runnable runnable, Throwable cause) {
+        if (runnable != null) {
+            runnable.run();
+        }
+        return new BoardException(this, cause);
+    }
+
+    @Override
+    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
+        return null;
+    }
+
+    @Override
+    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
+        return null;
     }
 }

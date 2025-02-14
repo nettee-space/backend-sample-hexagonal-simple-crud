@@ -15,7 +15,8 @@ public class GlobalExceptionHandler {
         var responseBody = ApiErrorResponse.builder()
                 .status(errorCode.httpStatus().value())
                 .code(errorCode.name())
-                .message(exception.getMessage()) // same to errorCode.defaultMessage
+                .message(exception.getMessage()) // same to errorCode.message
+                .payLoad(exception.getPayload())
                 .build();
 
         return ResponseEntity
