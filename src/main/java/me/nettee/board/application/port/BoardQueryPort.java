@@ -1,9 +1,8 @@
 package me.nettee.board.application.port;
 
-
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardModel.BoardDetail;
-import me.nettee.board.application.model.BoardModel.BoardSummary;
+import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
