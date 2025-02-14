@@ -13,6 +13,10 @@ public class CustomException extends RuntimeException {
         this.payload = Collections.emptyMap();
     }
 
+    public CustomException() {
+        this.errorCode = null;
+    }
+
     public CustomException(ErrorCode errorCode) {
         // ErrorCode의 기본 메시지를 RuntimeException에 전달하여 예외 메시지를 설정
         super(errorCode.message());

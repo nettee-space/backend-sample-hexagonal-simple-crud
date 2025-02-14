@@ -42,32 +42,4 @@ public enum BoardErrorCode implements ErrorCode {
     public BoardException exception(Throwable cause) {
         return new BoardException(this, cause);
     }
-
-    @Override
-    public RuntimeException exception(Runnable runnable) {
-        if (runnable != null) {
-            runnable.run();
-        }
-        return new BoardException(this);
-    }
-
-    @Override
-    public RuntimeException exception(Runnable runnable, Throwable cause) {
-        if (runnable != null) {
-            runnable.run();
-        }
-        return new BoardException(this, cause);
-    }
-
-    @Override
-    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
-        Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
-        return new BoardException(this, payload);
-    }
-
-    @Override
-    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
-        Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
-        return new BoardException(this, payload, cause);
-    }
 }
