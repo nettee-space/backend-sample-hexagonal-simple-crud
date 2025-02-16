@@ -1,28 +1,24 @@
 package me.nettee.board.adapter.driven.persistence
 
-import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.type.BoardStatus
+import me.nettee.core.jpa.JpaTransactionalFreeSpec
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @ComponentScan(basePackageClasses = [BoardEntityMapper::class])
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@EnableJpaAuditing
 class BoardQueryAdapterTest (
-        @Autowired private val boardJpaRepository : BoardJpaRepository,
-        @Autowired private val boardEntityMapper : BoardEntityMapper,
-        @Autowired private val entityManager : EntityManager,
-) : FreeSpec({
+        @Autowired private val boardJpaRepository: BoardJpaRepository,
+        @Autowired private val boardEntityMapper: BoardEntityMapper,
+        @Autowired private val entityManager: EntityManager,
+) : JpaTransactionalFreeSpec({
     val boardQueryAdapter = BoardQueryAdapter(boardEntityMapper)
 
     boardQueryAdapter.setEntityManager(entityManager)
@@ -71,9 +67,7 @@ class BoardQueryAdapterTest (
             )
         }
 
-        boardJpaRepository.saveAll(
-            boardEntities
-        )
+        boardJpaRepository.saveAll(boardEntities)
 
         "[정상] 게시글이 존재할 때" - {
             // When: 게시글 목록 조회
@@ -103,9 +97,7 @@ class BoardQueryAdapterTest (
             )
         }
 
-        boardJpaRepository.saveAll(
-            boardEntities
-        )
+        boardJpaRepository.saveAll(boardEntities)
 
         // When: 특정 상태 목록으로 게시글을 조회
         val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.PENDING)
