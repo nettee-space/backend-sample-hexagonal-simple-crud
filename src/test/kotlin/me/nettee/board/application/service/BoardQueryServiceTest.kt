@@ -100,7 +100,7 @@ class BoardQueryServiceTest : FreeSpec({
                         PageImpl(summaries, pageable, summaries.size.toLong())
 
                 every {
-                    boardQueryPort.findByStatusesList(pageable, statuses)
+                    boardQueryPort.findByStatusesList(statuses, pageable)
                 } returns expectedPage
 
                 // when
@@ -108,7 +108,7 @@ class BoardQueryServiceTest : FreeSpec({
 
                 // then
                 result shouldBe expectedPage
-                verify(exactly = 1) { boardQueryPort.findByStatusesList(pageable, statuses) }
+                verify(exactly = 1) { boardQueryPort.findByStatusesList(statuses, pageable) }
             }
 
             "빈 상태 목록으로 조회하면 빈 페이지가 반환" {
@@ -121,7 +121,7 @@ class BoardQueryServiceTest : FreeSpec({
                         PageImpl(emptySummaries, pageable, 0)
 
                 every {
-                    boardQueryPort.findByStatusesList(pageable, statuses)
+                    boardQueryPort.findByStatusesList(statuses, pageable)
                 } returns expectedPage
 
                 // when
@@ -129,7 +129,7 @@ class BoardQueryServiceTest : FreeSpec({
 
                 // then
                 result shouldBe expectedPage
-                verify(exactly = 1) { boardQueryPort.findByStatusesList(pageable, statuses) }
+                verify(exactly = 1) { boardQueryPort.findByStatusesList(statuses, pageable) }
             }
         }
     }
