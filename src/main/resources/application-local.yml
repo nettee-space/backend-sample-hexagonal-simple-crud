@@ -8,6 +8,7 @@ spring:
   jackson:
     serialization:
       wrap-root-value: true
+    default-property-inclusion: non_null
 
 logging:
   level:
