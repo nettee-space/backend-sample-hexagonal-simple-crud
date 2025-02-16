@@ -1,9 +1,8 @@
 package me.nettee.board.application.usecase;
 
-import me.nettee.board.application.model.BoardReadDetailModel;
+import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
 
 public interface BoardReadUseCase {
 
-   BoardReadDetailModel getBoard(Long id);
-
+    BoardDetail getBoard(Long id);
 }
