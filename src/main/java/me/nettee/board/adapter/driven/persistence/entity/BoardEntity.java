@@ -1,14 +1,14 @@
 package me.nettee.board.adapter.driven.persistence.entity;
 
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import me.nettee.board.application.domain.type.BoardStatus;
+import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus;
+import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatusConverter;
 import me.nettee.core.jpa.support.BaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -21,11 +21,11 @@ public class BoardEntity extends BaseTimeEntity {
 
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private BoardStatus status;
+    @Convert(converter = BoardEntityStatusConverter.class)
+    private BoardEntityStatus status;
 
     @Builder
-    public BoardEntity(String title, String content, BoardStatus status) {
+    public BoardEntity(String title, String content, BoardEntityStatus status) {
         this.title = title;
         this.content = content;
         this.status = status;
@@ -36,7 +36,7 @@ public class BoardEntity extends BaseTimeEntity {
             builderMethodName = "prepareUpdate",
             buildMethodName = "update"
     )
-    public void updateBoard(String title, String content, BoardStatus status) {
+    public void updateBoard(String title, String content, BoardEntityStatus status) {
         Objects.requireNonNull(title, "title cannot be null");
         Objects.requireNonNull(content, "content cannot be null");
         Objects.requireNonNull(status, "status cannot be null");
