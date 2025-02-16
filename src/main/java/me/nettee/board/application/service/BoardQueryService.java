@@ -3,14 +3,17 @@ package me.nettee.board.application.service;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardReadDetailModel;
-import me.nettee.board.application.model.BoardReadSummaryModel;
+import me.nettee.board.application.exception.BoardCommandException;
+import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
 import me.nettee.board.application.port.BoardQueryPort;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +22,13 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
     private final BoardQueryPort boardQueryPort;
 
     @Override
-    public BoardReadDetailModel getBoard(Long id) {
+    public BoardDetail getBoard(Long id) {
         return boardQueryPort.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+                () -> new BoardCommandException(BOARD_NOT_FOUND));
     }
 
     @Override
-    public Page<BoardReadSummaryModel> findByStatuses(Set<BoardStatus> statuses, Pageable pageable) {
+    public Page<BoardSummary> findByStatuses(Set<BoardStatus> statuses, Pageable pageable) {
         return boardQueryPort.findByStatusesList(pageable, statuses);
     }
 }
