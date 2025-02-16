@@ -14,15 +14,15 @@ public interface BoardEntityMapper {
 
     BoardEntity toEntity(Board board);
 
-    BoardDetail toBoardReadDetailModel(BoardEntity boardEntity);
+    BoardDetail toBoardDetail(BoardEntity boardEntity);
 
-    BoardSummary toBoardReadSummaryModel(BoardEntity boardEntity);
+    BoardSummary toBoardSummary(BoardEntity boardEntity);
 
     default Optional<Board> toOptionalDomain(BoardEntity boardEntity) {
         return Optional.ofNullable(toDomain(boardEntity));
     }
 
     default Optional<BoardDetail> toOptionalBoardReadDetailModel(BoardEntity boardEntity) {
-        return Optional.ofNullable(toBoardReadDetailModel(boardEntity));
+        return Optional.ofNullable(toBoardDetail(boardEntity));
     }
 }
