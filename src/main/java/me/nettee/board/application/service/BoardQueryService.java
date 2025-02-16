@@ -29,6 +29,6 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
 
     @Override
     public Page<BoardSummary> findByStatuses(Set<BoardStatus> statuses, Pageable pageable) {
-        return boardQueryPort.findByStatusesList(pageable, statuses);
+        return boardQueryPort.findByStatusesList(statuses, pageable);
     }
 }
