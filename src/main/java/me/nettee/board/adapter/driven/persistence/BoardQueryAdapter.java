@@ -4,7 +4,9 @@ import static me.nettee.board.adapter.driven.persistence.entity.QBoardEntity.boa
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
+import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus;
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
@@ -66,7 +68,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                 .where();
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(boardEntityMapper::toBoardReadSummaryModel).toList(),
+                result.stream().map(boardEntityMapper::toBoardSummary).toList(),
                 pageable,
                 totalCount::fetchOne
         );
@@ -75,10 +77,14 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     @Override
     public Page<BoardSummary> findByStatusesList(Set<BoardStatus> statuses, Pageable pageable) {
         // 기본 쿼리 생성
+        var boardEntityStatuses = statuses.stream().map(
+            status -> BoardEntityStatus.valueOf(status)
+        ).collect(Collectors.toSet());
+
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
                 .from(boardEntity)
-                .where(boardEntity.status.in(statuses));
+                .where(boardEntity.status.in(boardEntityStatuses));
 
         // pageable 정렬 조건 적용
         pageable.getSort().forEach(order -> {
@@ -97,10 +103,10 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
         var totalCount  = getQuerydsl().createQuery()
                 .select(boardEntity.count())
                 .from(boardEntity)
-                .where(boardEntity.status.in(statuses));
+                .where(boardEntity.status.in(boardEntityStatuses));
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(boardEntityMapper::toBoardReadSummaryModel).toList(),
+                result.stream().map(boardEntityMapper::toBoardSummary).toList(),
                 pageable,
                 totalCount::fetchOne
         );
