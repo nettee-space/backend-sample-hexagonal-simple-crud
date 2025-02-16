@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardReadSummaryModel;
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 import java.util.Set;
+
+import static me.nettee.board.application.exception.BoardErrorCode.BOARD_NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/boards")
@@ -27,13 +31,13 @@ public class BoardQueryApi {
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
-        var board = boardReadUseCase.getBoard(boardId);
+        var board = Optional.ofNullable(boardReadUseCase.getBoard(boardId)).orElseThrow(BOARD_NOT_FOUND::exception);
 
         return mapper.toDtoDetail(board);
     }
 
     @GetMapping
-    public Page<BoardReadSummaryModel> getBoardsByStatuses(@RequestParam(defaultValue = "ACTIVE,SUSPENDED") Set<BoardStatus> statuses, Pageable pageable) {
+    public Page<BoardSummary> getBoardsByStatuses(@RequestParam(defaultValue = "ACTIVE,SUSPENDED") Set<BoardStatus> statuses, Pageable pageable) {
         return boardReadByStatusesUseCase.findByStatuses(statuses, pageable);
     }
 }
