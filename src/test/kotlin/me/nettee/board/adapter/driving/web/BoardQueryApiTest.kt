@@ -4,8 +4,8 @@ import io.kotest.core.spec.style.FreeSpec
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper
 import me.nettee.board.application.domain.type.BoardStatus
-import me.nettee.board.application.model.BoardReadDetailModel
-import me.nettee.board.application.model.BoardReadSummaryModel
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary
+import me.nettee.board.application.model.BoardQueryModel.BoardDetail
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase
 import me.nettee.board.application.usecase.BoardReadUseCase
 import org.junit.jupiter.api.extension.ExtendWith
@@ -38,13 +38,21 @@ class BoardQueryApiTest(
     @Autowired private val mvc: MockMvc
 ) : FreeSpec({
 
-    lateinit var boardList: List<BoardReadSummaryModel>
+    lateinit var boardList: List<BoardSummary>
+    lateinit var boardListWithNull: List<BoardSummary>
 
     "[GET]게시판 상세 조회" - {
         val mvcGet = fun(boardId: Long): ResultActionsDsl {
             return mvc.get("/api/v1/boards/$boardId") {
                 contentType = MediaType.APPLICATION_JSON
             }
+        }
+
+        "[2xx] null 포함된 데이터 조회 시 필드 제외 확인"{
+            mvc.get("/api/v1/boards/2")
+                .andExpect { status { is2xxSuccessful() } }
+                .andDo { print() }
+                .andReturn()
         }
 
         "[2xx] 정상 요청 상태 반환" {
@@ -90,10 +98,10 @@ class BoardQueryApiTest(
     }
 
     var boardReadSummaryModelPage: (
-        List<BoardReadSummaryModel>,
+        List<BoardSummary>,
         Pageable,
         Set<BoardStatus>
-    ) -> Page<BoardReadSummaryModel>
+    ) -> Page<BoardSummary>
 
     beforeSpec {
         boardReadSummaryModelPage = { boardList, pageable, boardStatus ->
@@ -109,17 +117,21 @@ class BoardQueryApiTest(
             PageImpl(pageContent, pageable, filteredBoards.size.toLong())
         }
 
-        val boardDetail = BoardReadDetailModel(1L, "title1", "content1", BoardStatus.ACTIVE, Instant.now(), Instant.now(), null)
+        val boardDetail = BoardDetail(1L, "title1", "content1", BoardStatus.ACTIVE, Instant.now(), Instant.now())
+        val boardDetailWithNull = BoardDetail(2L, null, null, BoardStatus.ACTIVE, Instant.now(), Instant.now())
+
         // list 반복문 완성 코드 ***
         boardList = (1..14).flatMap {
             listOf(
-                BoardReadSummaryModel(it.toLong(), "title$it", "content$it",  Instant.now(), Instant.now()),
-                BoardReadSummaryModel(it.toLong(), "title$it", "content$it",  Instant.now(), Instant.now())
+                BoardSummary(it.toLong(), "title$it", BoardStatus.ACTIVE,  Instant.now(), Instant.now()),
+                BoardSummary(it.toLong(), "title$it", BoardStatus.SUSPENDED,  Instant.now(), Instant.now()) ,
+                BoardSummary(it.toLong(), null, BoardStatus.SUSPENDED,  Instant.now(), Instant.now())
             )
         }
 
         `when`(boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
-        `when`(boardReadUseCase.getBoard(argThat { it != 1L })).thenThrow(ResponseStatusException(HttpStatus.NOT_FOUND))
+        `when`(boardReadUseCase.getBoard(2L)).thenAnswer { boardDetailWithNull }
+        `when`(boardReadUseCase.getBoard(argThat { it != 1L && it != 2L })).thenThrow(ResponseStatusException(HttpStatus.NOT_FOUND))
         `when`(
             boardReadByStatusesUseCase.findByStatuses(
                 any<Set<BoardStatus>>(),
@@ -131,7 +143,10 @@ class BoardQueryApiTest(
             boardReadSummaryModelPage(boardList, pageable, statuses)
         }
         `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
+        `when`(boardDtoMapper.toDtoDetail(boardDetailWithNull)).thenReturn(BoardDetailResponse(boardDetailWithNull))
     }
+
 })
+
 
 
