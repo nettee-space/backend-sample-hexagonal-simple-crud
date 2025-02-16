@@ -7,8 +7,8 @@ import java.util.Set;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardReadDetailModel;
-import me.nettee.board.application.model.BoardReadSummaryModel;
+import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
 import me.nettee.board.application.port.BoardQueryPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,19 +28,18 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     }
 
     @Override
-    public Optional<BoardReadDetailModel> findById(Long id) {
+    public Optional<BoardDetail> findById(Long id) {
         return boardEntityMapper.toOptionalBoardReadDetailModel(
                 getQuerydsl().createQuery()
                         .select(boardEntity)
                         .from(boardEntity)
-                        .where(
-                                boardEntity.id.eq(id)
+                        .where(boardEntity.id.eq(id)
                         ).fetchOne()
         );
     }
 
     @Override
-    public Page<BoardReadSummaryModel> findAll(Pageable pageable) {
+    public Page<BoardSummary> findAll(Pageable pageable) {
         // 기본 쿼리 생성
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
@@ -74,7 +73,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     }
 
     @Override
-    public Page<BoardReadSummaryModel> findByStatusesList(Pageable pageable, Set<BoardStatus> statuses) {
+    public Page<BoardSummary> findByStatusesList(Set<BoardStatus> statuses, Pageable pageable) {
         // 기본 쿼리 생성
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
