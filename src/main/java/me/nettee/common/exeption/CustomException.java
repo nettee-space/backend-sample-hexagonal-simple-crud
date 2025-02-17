@@ -2,7 +2,6 @@ package me.nettee.common.exeption;
 
 import java.util.Collections;
 import java.util.Map;
-import me.nettee.board.application.exception.BoardErrorCode;
 
 public class CustomException extends RuntimeException {
     private final ErrorCode errorCode;
@@ -30,13 +29,13 @@ public class CustomException extends RuntimeException {
         this.payload = Collections.emptyMap();
     }
 
-    public CustomException(BoardErrorCode errorCode, Map<String, Object> payload) {
+    public CustomException(ErrorCode errorCode, Map<String, Object> payload) {
         super(errorCode.message());
         this.errorCode = errorCode;
         this.payload = payload;
     }
 
-    public CustomException(BoardErrorCode errorCode, Map<String, Object> payload, Throwable cause) {
+    public CustomException(ErrorCode errorCode, Map<String, Object> payload, Throwable cause) {
         super(errorCode.message(), cause);
         this.errorCode = errorCode;
         this.payload = payload;

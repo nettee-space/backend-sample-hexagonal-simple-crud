@@ -54,12 +54,12 @@ public class BoardErrorCodeLazyHolder implements ErrorCode {
 
     @Override
     public RuntimeException exception() {
-        return new BoardException(this);
+        return new BoardCommandException(this);
     }
 
     @Override
     public RuntimeException exception(Throwable cause) {
-        return new BoardException(this, cause);
+        return new BoardCommandException(this, cause);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BoardErrorCodeLazyHolder implements ErrorCode {
         if (runnable != null) {
             runnable.run();
         }
-        return new BoardException(this);
+        return new BoardCommandException(this);
     }
 
     @Override
@@ -75,16 +75,16 @@ public class BoardErrorCodeLazyHolder implements ErrorCode {
         if (runnable != null) {
             runnable.run();
         }
-        return new BoardException(this, cause);
+        return new BoardCommandException(this, cause);
     }
 
     @Override
     public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
-        return null;
+        return new BoardCommandException(this, appendPayload.get());
     }
 
     @Override
     public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
-        return null;
+        return new BoardCommandException(this, appendPayload.get(), cause);
     }
 }
