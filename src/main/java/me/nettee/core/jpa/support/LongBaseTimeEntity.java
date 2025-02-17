@@ -12,7 +12,7 @@ import java.time.Instant;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseTimeEntity {
+public abstract class LongBaseTimeEntity extends LongBaseEntity {
     @CreatedDate
     private Instant createdAt;
 
