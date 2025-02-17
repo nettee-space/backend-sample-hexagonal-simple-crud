@@ -46,8 +46,7 @@ public class BoardEntity extends BaseTimeEntity {
         this.content = content;
         this.status = status;
     }
-
-//    //updateStatus용 builder추가
+    
     @Builder(
             builderClassName = "UpdateStatusBoardBuilder",
             builderMethodName = "prepareUpdateStatus",
