@@ -3,6 +3,7 @@ package me.nettee.board.adapter.driven.persistence
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity
+import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.core.jpa.JpaTransactionalFreeSpec
@@ -26,7 +27,7 @@ class BoardQueryAdapterTest (
     val boardEntity = BoardEntity.builder()
             .title("제목")
             .content("내용")
-            .status(BoardStatus.ACTIVE)
+            .status(BoardEntityStatus.ACTIVE)
             .build()
 
     beforeSpec {
@@ -62,7 +63,7 @@ class BoardQueryAdapterTest (
                 BoardEntity.builder()
                     .title("title$it")
                     .content("content$it")
-                    .status(BoardStatus.ACTIVE)
+                    .status(BoardEntityStatus.ACTIVE)
                     .build()
             )
         }
@@ -92,7 +93,7 @@ class BoardQueryAdapterTest (
                 BoardEntity.builder()
                     .title("게시글 $it")
                     .content("내용 $it")
-                    .status(if (it % 2 == 0) { BoardStatus.ACTIVE } else { BoardStatus.PENDING })
+                    .status(if (it % 2 == 0) { BoardEntityStatus.ACTIVE } else { BoardEntityStatus.PENDING })
                     .build()
             )
         }
