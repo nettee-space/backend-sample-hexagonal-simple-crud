@@ -22,7 +22,7 @@ class BoardCommandServiceTest : FreeSpec({
     "BoardCommandService" - {
         "create" {
             // given
-            var board = Board()
+            val board = Board()
             every {
                 boardCommandPort.create(board)
             } returns board
