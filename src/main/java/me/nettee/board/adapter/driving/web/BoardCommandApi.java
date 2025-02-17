@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static me.nettee.board.application.exception.BoardErrorCode.BOARD_NOT_FOUND;
+import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/boards")

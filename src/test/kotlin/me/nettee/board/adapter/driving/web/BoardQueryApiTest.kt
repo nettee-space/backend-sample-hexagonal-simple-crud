@@ -39,7 +39,6 @@ class BoardQueryApiTest(
 ) : FreeSpec({
 
     lateinit var boardList: List<BoardSummary>
-    lateinit var boardListWithNull: List<BoardSummary>
 
     "[GET]게시판 상세 조회" - {
         val mvcGet = fun(boardId: Long): ResultActionsDsl {
