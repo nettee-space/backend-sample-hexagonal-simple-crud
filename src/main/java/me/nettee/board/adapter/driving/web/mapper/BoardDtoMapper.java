@@ -4,7 +4,7 @@ import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardCreateComman
 import me.nettee.board.adapter.driving.web.dto.BoardCommandDto.BoardUpdateCommand;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.application.domain.Board;
-import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModels.BoardDetail;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
