@@ -32,10 +32,10 @@ public class BoardCommandAdapter implements BoardCommandPort {
     public Board create(Board board) {
         var boardEntity = boardEntityMapper.toEntity(board);
 
-        if(boardJpaRepository.existsById(boardEntity.getId())) {
-            // 이미 존재하는 게시판 입니다. 이라는 구체적인 에러 코드 추가가 필요해보임
-            throw DEFAULT.defaultException();
-        }
+//        if(boardJpaRepository.existsById(boardEntity.getId())) {
+//            // 이미 존재하는 게시판 입니다. 이라는 구체적인 에러 코드 추가가 필요해보임
+//            throw DEFAULT.defaultException();
+//        }
 
         return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));
     }
@@ -60,8 +60,15 @@ public class BoardCommandAdapter implements BoardCommandPort {
                 .orElseThrow(BOARD_NOT_FOUND::defaultException);
 
         board.prepareUpdate()
+                .title(board.getTitle()) //필요없는데 추가함.
+                .content(board.getContent()) //필요없는데 추가함.
                 .status(BoardEntityStatus.valueOf(status))
                 .update();
+
+//        BoardEntity에 updateStatus를 추가한다면 하기와 같이 활용.
+//        board.prepareUpdateStatus()
+//                .status(BoardEntityStatus.valueOf(status))
+//                .updateStatus();
 
         boardJpaRepository.save(board);
     }

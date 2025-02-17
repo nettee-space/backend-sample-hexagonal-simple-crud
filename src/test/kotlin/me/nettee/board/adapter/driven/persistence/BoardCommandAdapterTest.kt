@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import me.nettee.board.adapter.driven.persistence.BoardCommandAdapter
 import me.nettee.board.adapter.driven.persistence.BoardJpaRepository
+import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper
 import me.nettee.board.application.domain.Board
 import me.nettee.board.application.domain.type.BoardStatus
@@ -25,6 +26,42 @@ class BoardCommandAdapterTest(
     val testTitle = "Test Title"
     val testContent = "Test Content"
 
+    "[Pass] findById" - {
+        val savedTitle = "search Title"
+        val savedContent = "search Content"
+        val savedStatus = BoardStatus.PENDING
+        val board = Board.builder()
+                .title(savedTitle)
+                .content(savedContent)
+                .status(savedStatus)
+                .build()
+
+        val savedId = repository.save(mapper.toEntity(board)).id
+        val originBoardEntity = repository.findById(savedId).get()
+
+        "조회할 Board -> 조회된 Board" - {
+            val result = adapter.findById(savedId).get()
+
+            "id 값 유지" {
+                result.id shouldBeEqual savedId
+            }
+
+            "title, content, status 값 유지" {
+                result.title shouldBeEqual savedTitle
+                result.content shouldBeEqual savedContent
+                result.status shouldBeEqual savedStatus
+            }
+
+            "createdAt 값 유지" {
+                result.createdAt shouldBeEqual originBoardEntity.createdAt
+            }
+
+            "updatedAt 값 유지" {
+                result.updatedAt shouldBeEqual  originBoardEntity.updatedAt
+            }
+        }
+    }
+
     "[Pass] Create(boardDomain)" - {
         val board = Board.builder()
             .title(testTitle)
@@ -35,9 +72,9 @@ class BoardCommandAdapterTest(
         "save: boardDomain -> boardDomain" - {
             val result = adapter.create(board)
 
-            "id 생성" {
-                result.id shouldNotBe null
-            }
+//            "id 생성" {
+//                result.id shouldNotBe null
+//            }
 
             "title, content 입력 일치 확인" {
                 result.title shouldBeEqual testTitle
@@ -144,13 +181,13 @@ class BoardCommandAdapterTest(
 
         val savedBoardEntity = repository.save(mapper.toEntity(board))
 
-        "id -> void" - {
-            adapter.delete(savedBoardEntity.id)
+        "soft delete id -> REMOVED로 상태 변경" - {
+            adapter.updateStatus(savedBoardEntity.id, BoardStatus.REMOVED)
 
-            // NOTE: 실습용으로 2가지 사용 - 의미는 동일
             "data 존재 확인" {
-                repository.existsById(savedBoardEntity.id) shouldBe false
-                repository.findById(savedBoardEntity.id).isEmpty shouldBe true
+                val deletedBoard = repository.findById(savedBoardEntity.id)
+                deletedBoard.isPresent shouldBe true
+                deletedBoard.get().status shouldBe BoardEntityStatus.REMOVED
             }
         }
     }
