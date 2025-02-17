@@ -3,8 +3,8 @@ package me.nettee.board.adapter.driven.persistence.mapper;
 import java.util.Optional;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
 import me.nettee.board.application.domain.Board;
-import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
-import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
+import me.nettee.board.application.model.BoardQueryModels.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModels.BoardSummary;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
