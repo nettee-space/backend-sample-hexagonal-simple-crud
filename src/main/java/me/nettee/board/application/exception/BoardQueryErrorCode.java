@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import me.nettee.common.exeption.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public enum BoardErrorCode implements ErrorCode {
+public enum BoardQueryErrorCode implements ErrorCode {
     // ⬇️ 인증 쪽 에러코드 제공받아 쓸 것이냐
     // UNAUTHORIZED("로그인이 필요한 기능입니다.", HttpStatus.UNAUTHORIZED),
     // ⬇️ 조회 쪽 에러코드 제공받아 쓸 것이냐, 아니면 Master DB 핸들 시 사용할 용도로 여기 따로 둘 거냐.
@@ -18,7 +18,7 @@ public enum BoardErrorCode implements ErrorCode {
     private final String message;
     private final HttpStatus httpStatus;
 
-    BoardErrorCode(String message, HttpStatus httpStatus) {
+    BoardQueryErrorCode(String message, HttpStatus httpStatus) {
         this.message = message;
         this.httpStatus = httpStatus;
     }
@@ -34,13 +34,13 @@ public enum BoardErrorCode implements ErrorCode {
     }
 
     @Override
-    public BoardException exception() {
-        return new BoardException(this);
+    public BoardQueryException exception() {
+        return new BoardQueryException(this);
     }
 
     @Override
-    public BoardException exception(Throwable cause) {
-        return new BoardException(this, cause);
+    public BoardQueryException exception(Throwable cause) {
+        return new BoardQueryException(this, cause);
     }
 
     @Override
@@ -48,7 +48,7 @@ public enum BoardErrorCode implements ErrorCode {
         if (runnable != null) {
             runnable.run();
         }
-        return new BoardException(this);
+        return new BoardQueryException(this);
     }
 
     @Override
@@ -56,18 +56,18 @@ public enum BoardErrorCode implements ErrorCode {
         if (runnable != null) {
             runnable.run();
         }
-        return new BoardException(this, cause);
+        return new BoardQueryException(this, cause);
     }
 
     @Override
     public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
         Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
-        return new BoardException(this, payload);
+        return new BoardQueryException(this, payload);
     }
 
     @Override
     public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
         Map<String, Object> payload = (appendPayload != null) ? appendPayload.get() : Collections.emptyMap();
-        return new BoardException(this, payload, cause);
+        return new BoardQueryException(this, payload, cause);
     }
 }
