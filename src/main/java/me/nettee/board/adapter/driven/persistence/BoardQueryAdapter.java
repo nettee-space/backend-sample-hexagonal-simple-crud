@@ -31,7 +31,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
 
     @Override
     public Optional<BoardDetail> findById(Long id) {
-        return boardEntityMapper.toOptionalBoardReadDetailModel(
+        return boardEntityMapper.toOptionalBoardDetail(
                 getQuerydsl().createQuery()
                         .select(boardEntity)
                         .from(boardEntity)
@@ -44,9 +44,9 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     public Page<BoardSummary> findAll(Pageable pageable) {
         // 기본 쿼리 생성
         var query = getQuerydsl().createQuery()
-                .select(boardEntity)
-                .from(boardEntity)
-                .where();
+            .select(boardEntity)
+            .from(boardEntity)
+            .where();
 
         // pageable 정렬 조건 적용
         pageable.getSort().forEach(order -> {
@@ -59,7 +59,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
 
         var result = query
                 .offset(pageable.getOffset()) // 현재 페이지의 오프셋 설정
-                .limit(pageable.getPageSize()) // 페이지 크기 설정
+                .limit(pageable.getPageSize())// 페이지 크기 설정
                 .fetch(); // 쿼리 실행
 
         var totalCount  = getQuerydsl().createQuery()
@@ -98,7 +98,7 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
         var result = query
                 .offset(pageable.getOffset()) // 현재 페이지의 오프셋 설정
                 .limit(pageable.getPageSize()) // 페이지 크기 설정
-                .fetch(); // 쿼리 실행
+                .fetch();
 
         var totalCount  = getQuerydsl().createQuery()
                 .select(boardEntity.count())
@@ -106,7 +106,9 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                 .where(boardEntity.status.in(boardEntityStatuses));
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(boardEntityMapper::toBoardSummary).toList(),
+                result.stream()
+                    .map(boardEntityMapper::toBoardSummary)
+                    .toList(),
                 pageable,
                 totalCount::fetchOne
         );

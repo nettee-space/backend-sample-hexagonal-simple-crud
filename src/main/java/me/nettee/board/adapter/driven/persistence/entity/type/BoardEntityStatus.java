@@ -37,13 +37,5 @@ public enum BoardEntityStatus {
             default -> throw new IllegalStateException("Unexpected value: " + value);
         };
     }
-    
-    public static BoardStatus toBoardStatus(BoardEntityStatus status) {
-        return switch (status) {
-            case REMOVED -> BoardStatus.REMOVED;
-            case PENDING -> BoardStatus.PENDING;
-            case ACTIVE -> BoardStatus.ACTIVE;
-            case SUSPENDED -> BoardStatus.SUSPENDED;
-        };
-    }
+
 }
