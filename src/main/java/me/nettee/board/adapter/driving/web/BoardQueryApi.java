@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driving.web.dto.BoardQueryDto.BoardDetailResponse;
 import me.nettee.board.adapter.driving.web.mapper.BoardDtoMapper;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardQueryModels.BoardSummary;
+import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
 import org.springframework.data.domain.Page;
