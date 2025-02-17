@@ -30,23 +30,17 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
     }
 
     public void deleteBoard(Long id) {
-        Board board = boardCommandPort.findById(id).orElseThrow(
-                () -> new BoardCommandException(BOARD_NOT_FOUND));
-
-        // id와 board의 id가 다르면 예외 발생 - 굳이 필요할까? 고민
-        // 필요하다면 에러코드 추가 필요
-        if(!Objects.equals(board.getId(), id)) {
-            throw new BoardCommandException(DEFAULT);
-        }
-
         // softDelete 명을 가진 메서드가 생기면 변경
         // 현재 updateStatus로 REMOVE 상태로 변경
         boardCommandPort.updateStatus(id, BoardStatus.REMOVED);
 
-        // 2025.02.16
-        // 굳이 updateStatus 전에 board를 조회하는 이유가 있을까요?
-        // 명목상 updateStatus 이후 hard delete가 된건 아닌지
-        // soft Delete각 내가 의도한 BoardStatus.Removed에 맞게 됐는지?
-        // 소스 흐름 상 그렇게 바꿔보면 좋을 것 같습니다.
+        // Hard Delete 됬는지 확인
+        Board board = boardCommandPort.findById(id).orElseThrow(
+                () -> new BoardCommandException(BOARD_NOT_FOUND));
+
+        // REMOVED 상태 확인 (null-safe)
+        if (!Objects.equals(board.getStatus(), BoardStatus.REMOVED)) {
+            throw new BoardCommandException(DEFAULT);
+        }
     }
 }
