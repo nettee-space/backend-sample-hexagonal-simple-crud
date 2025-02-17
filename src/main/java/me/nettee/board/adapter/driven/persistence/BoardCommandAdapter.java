@@ -6,6 +6,7 @@ import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.port.BoardCommandPort;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -31,13 +32,13 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public Board create(Board board) {
         var boardEntity = boardEntityMapper.toEntity(board);
-
-//        if(boardJpaRepository.existsById(boardEntity.getId())) {
-//            // 이미 존재하는 게시판 입니다. 이라는 구체적인 에러 코드 추가가 필요해보임
-//            throw DEFAULT.defaultException();
-//        }
-
-        return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));
+        try {
+            var newBoard = boardJpaRepository.save(boardEntity);
+            boardJpaRepository.flush();
+            return boardEntityMapper.toDomain(newBoard);
+        } catch (DataAccessException e) {
+            throw DEFAULT.defaultException();
+        }
     }
 
     @Override
@@ -59,16 +60,9 @@ public class BoardCommandAdapter implements BoardCommandPort {
         var board = boardJpaRepository.findById(id)
                 .orElseThrow(BOARD_NOT_FOUND::defaultException);
 
-        board.prepareUpdate()
-                .title(board.getTitle()) //필요없는데 추가함.
-                .content(board.getContent()) //필요없는데 추가함.
+        board.prepareUpdateStatus()
                 .status(BoardEntityStatus.valueOf(status))
-                .update();
-
-//        BoardEntity에 updateStatus를 추가한다면 하기와 같이 활용.
-//        board.prepareUpdateStatus()
-//                .status(BoardEntityStatus.valueOf(status))
-//                .updateStatus();
+                .updateStatus();
 
         boardJpaRepository.save(board);
     }

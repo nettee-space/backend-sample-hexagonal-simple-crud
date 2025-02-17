@@ -72,9 +72,9 @@ class BoardCommandAdapterTest(
         "save: boardDomain -> boardDomain" - {
             val result = adapter.create(board)
 
-//            "id 생성" {
-//                result.id shouldNotBe null
-//            }
+            "id 생성" {
+                result.id shouldNotBe null
+            }
 
             "title, content 입력 일치 확인" {
                 result.title shouldBeEqual testTitle
@@ -172,7 +172,7 @@ class BoardCommandAdapterTest(
         }
     }
 
-    "[Pass] Delete(id)" - {
+    "[Pass] updateStatus" - {
         val board = Board.builder()
             .title(testTitle)
             .content(testContent)
@@ -181,10 +181,10 @@ class BoardCommandAdapterTest(
 
         val savedBoardEntity = repository.save(mapper.toEntity(board))
 
-        "soft delete id -> REMOVED로 상태 변경" - {
+        "ACTIVE -> REMOVED로 상태 변경시" - {
             adapter.updateStatus(savedBoardEntity.id, BoardStatus.REMOVED)
 
-            "data 존재 확인" {
+            "[성공 처리]REMOVED 확인" {
                 val deletedBoard = repository.findById(savedBoardEntity.id)
                 deletedBoard.isPresent shouldBe true
                 deletedBoard.get().status shouldBe BoardEntityStatus.REMOVED

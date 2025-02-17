@@ -48,12 +48,13 @@ public class BoardEntity extends BaseTimeEntity {
     }
 
 //    //updateStatus용 builder추가
-//    @Builder(
-//            builderClassName = "UpdateStatusBoardBuilder",
-//            builderMethodName = "prepareUpdateStatus",
-//            buildMethodName = "updateStatus"
-//    )
-//    public void updateStatus(BoardEntityStatus status) {
-//        this.status = status;
-//    }
+    @Builder(
+            builderClassName = "UpdateStatusBoardBuilder",
+            builderMethodName = "prepareUpdateStatus",
+            buildMethodName = "updateStatus"
+    )
+    public void updateStatus(BoardEntityStatus status) {
+    Objects.requireNonNull(status, "status cannot be null");
+        this.status = status;
+    }
 }
