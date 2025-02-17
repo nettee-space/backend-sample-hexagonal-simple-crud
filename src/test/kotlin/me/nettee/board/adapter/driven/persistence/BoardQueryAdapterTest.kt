@@ -102,7 +102,7 @@ class BoardQueryAdapterTest (
         // When: 특정 상태 목록으로 게시글을 조회
         val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.PENDING)
         val pageable = PageRequest.of(0, 10)
-        val page = boardQueryAdapter.findByStatusesList(pageable, statuses)
+        val page = boardQueryAdapter.findByStatusesList(statuses, pageable)
         val expectedSize = boardEntities.size
 
         "[검증1] 필터링된 게시글 총 개수를 검증" {
