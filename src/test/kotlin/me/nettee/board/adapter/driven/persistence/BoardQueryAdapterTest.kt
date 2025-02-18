@@ -94,17 +94,17 @@ class BoardQueryAdapterTest (
     "[Read] 특정 상태 목록으로 게시글 목록을 조회" - {
         // Given: 특정 상태에 해당하는 게시글 저장
         val boardEntities = setOf(
-            BoardEntity.builder()
+                BoardEntity.builder()
                         .title("게시글 1")
                         .content("내용 1")
                         .status(BoardStatus.ACTIVE)
                         .build(),
-            BoardEntity.builder()
+                BoardEntity.builder()
                         .title("게시글 2")
                         .content("내용 2")
                         .status(BoardStatus.PENDING)
                         .build(),
-            BoardEntity.builder()
+                BoardEntity.builder()
                         .title("게시글 3")
                         .content("내용 3")
                         .status(BoardStatus.ACTIVE)
