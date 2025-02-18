@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.core.jpa.support.BaseTimeEntity;
+import me.nettee.core.jpa.support.LongBaseTimeEntity;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Objects;
@@ -17,7 +17,7 @@ import java.util.Objects;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "board")
-public class BoardEntity extends BaseTimeEntity {
+public class BoardEntity extends LongBaseTimeEntity {
     private String title;
 
     private String content;
