@@ -18,7 +18,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity(name = "board")
 public class BoardEntity extends BaseTimeEntity {
     private String title;
-
     private String content;
 
     @Convert(converter = BoardEntityStatusConverter.class)

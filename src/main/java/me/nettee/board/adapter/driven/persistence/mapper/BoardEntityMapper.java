@@ -9,7 +9,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface BoardEntityMapper {
-
     Board toDomain(BoardEntity boardEntity);
 
     BoardEntity toEntity(Board board);
@@ -25,5 +24,4 @@ public interface BoardEntityMapper {
     default Optional<BoardDetail> toOptionalBoardDetail(BoardEntity boardEntity) {
         return Optional.ofNullable(toBoardDetail(boardEntity));
     }
-
 }

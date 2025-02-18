@@ -3,7 +3,6 @@ package me.nettee.board.adapter.driven.persistence.entity.type;
 import me.nettee.board.application.domain.type.BoardStatus;
 
 public enum BoardEntityStatus {
-
     REMOVED(0),
     PENDING(10),
     ACTIVE(20),
@@ -29,7 +28,7 @@ public enum BoardEntityStatus {
     }
 
     public static BoardEntityStatus valueOf(int value) {
-        return switch (value){
+        return switch (value) {
             case 0 -> REMOVED;
             case 10 -> PENDING;
             case 20 -> ACTIVE;
@@ -37,5 +36,4 @@ public enum BoardEntityStatus {
             default -> throw new IllegalStateException("Unexpected value: " + value);
         };
     }
-
 }
