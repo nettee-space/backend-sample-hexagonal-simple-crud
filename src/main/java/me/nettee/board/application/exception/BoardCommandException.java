@@ -17,7 +17,6 @@ public class BoardCommandException extends CustomException {
         super(errorCode, cause);
     }
 
-
     public BoardCommandException(ErrorCode errorCode, Map<String, Object> payload) {
         super(errorCode, payload);
     }

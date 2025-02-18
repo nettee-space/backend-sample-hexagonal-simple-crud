@@ -2,7 +2,6 @@ package me.nettee.board.application.exception;
 
 import java.util.Map;
 import me.nettee.common.exeption.CustomException;
-import me.nettee.common.exeption.ErrorCode;
 
 public class BoardQueryException extends CustomException {
     public BoardQueryException(BoardQueryErrorCode errorCode) {
@@ -12,7 +11,6 @@ public class BoardQueryException extends CustomException {
     public BoardQueryException(BoardQueryErrorCode errorCode, Throwable cause) {
         super(errorCode, cause);
     }
-
 
     public BoardQueryException(BoardQueryErrorCode errorCode, Map<String, Object> payload, Throwable cause) {
         super(errorCode, payload, cause);
