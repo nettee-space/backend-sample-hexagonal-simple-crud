@@ -35,8 +35,8 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
         boardCommandPort.updateStatus(id, BoardStatus.REMOVED);
 
         // Hard Delete 됬는지 확인
-        Board board = boardCommandPort.findById(id).orElseThrow(
-                () -> new BoardCommandException(BOARD_NOT_FOUND));
+        Board board = boardCommandPort.findById(id)
+                .orElseThrow(BOARD_NOT_FOUND::defaultException);
 
         // REMOVED 상태 확인 (null-safe)
         if (!Objects.equals(board.getStatus(), BoardStatus.REMOVED)) {

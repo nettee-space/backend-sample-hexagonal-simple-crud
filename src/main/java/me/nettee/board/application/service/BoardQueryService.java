@@ -23,8 +23,8 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
 
     @Override
     public BoardDetail getBoard(Long id) {
-        return boardQueryPort.findById(id).orElseThrow(
-                () -> new BoardCommandException(BOARD_NOT_FOUND));
+        return boardQueryPort.findById(id)
+                .orElseThrow(BOARD_NOT_FOUND::defaultException);
     }
 
     @Override
