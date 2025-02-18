@@ -1,6 +1,6 @@
 package me.nettee.board.adapter.driven.persistence.mapper;
 
-import me.nettee.board.adapter.driven.persistence.entity.BoardEntityLong;
+import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
 import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.model.BoardReadDetailModel;
 import me.nettee.board.application.model.BoardReadSummaryModel;
@@ -11,19 +11,19 @@ import java.util.Optional;
 @Mapper(componentModel = "spring")
 public interface BoardEntityMapper {
 
-    Board toDomain(BoardEntityLong boardEntity);
+    Board toDomain(BoardEntity boardEntity);
 
-    BoardEntityLong toEntity(Board board);
+    BoardEntity toEntity(Board board);
 
-    BoardReadDetailModel toBoardReadDetailModel(BoardEntityLong boardEntity);
+    BoardReadDetailModel toBoardReadDetailModel(BoardEntity boardEntity);
 
-    BoardReadSummaryModel toBoardReadSummaryModel(BoardEntityLong boardEntity);
+    BoardReadSummaryModel toBoardReadSummaryModel(BoardEntity boardEntity);
 
-    default Optional<Board> toOptionalDomain(BoardEntityLong boardEntity) {
+    default Optional<Board> toOptionalDomain(BoardEntity boardEntity) {
         return Optional.ofNullable(toDomain(boardEntity));
     }
 
-    default Optional<BoardReadDetailModel> toOptionalBoardReadDetailModel(BoardEntityLong boardEntity) {
+    default Optional<BoardReadDetailModel> toOptionalBoardReadDetailModel(BoardEntity boardEntity) {
         return Optional.ofNullable(toBoardReadDetailModel(boardEntity));
     }
 }
