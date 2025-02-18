@@ -9,7 +9,8 @@ import io.mockk.verify
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND
 import me.nettee.board.application.exception.BoardCommandException
-import me.nettee.board.application.model.BoardQueryModel
+import me.nettee.board.application.model.BoardQueryModels.BoardSummary
+import me.nettee.board.application.model.BoardQueryModels.BoardDetail
 import me.nettee.board.application.port.BoardQueryPort
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -32,7 +33,7 @@ class BoardQueryServiceTest : FreeSpec({
                 val now = Instant.now()
 
                 // 자바 record 이므로, 순서대로 인자 전달
-                val expectedDetail = BoardQueryModel.BoardDetail(
+                val expectedDetail = BoardDetail(
                         boardId,
                         "Test Title",
                         "Test Content",
@@ -80,14 +81,14 @@ class BoardQueryServiceTest : FreeSpec({
 
                 // 자바 record 이므로, 순서대로 인자 전달
                 val summaries = listOf(
-                        BoardQueryModel.BoardSummary(
+                        BoardSummary(
                                 1L,
                                 "Active Board",
                                 BoardStatus.ACTIVE,
                                 now,
                                 now
                         ),
-                        BoardQueryModel.BoardSummary(
+                        BoardSummary(
                                 2L,
                                 "Suspended Board",
                                 BoardStatus.SUSPENDED,
@@ -96,7 +97,7 @@ class BoardQueryServiceTest : FreeSpec({
                         )
                 )
 
-                val expectedPage: Page<BoardQueryModel.BoardSummary> =
+                val expectedPage: Page<BoardSummary> =
                         PageImpl(summaries, pageable, summaries.size.toLong())
 
                 every {
@@ -116,8 +117,8 @@ class BoardQueryServiceTest : FreeSpec({
                 val statuses = emptySet<BoardStatus>()
                 val pageable = PageRequest.of(0, 10)
 
-                val emptySummaries = emptyList<BoardQueryModel.BoardSummary>()
-                val expectedPage: Page<BoardQueryModel.BoardSummary> =
+                val emptySummaries = emptyList<BoardSummary>()
+                val expectedPage: Page<BoardSummary> =
                         PageImpl(emptySummaries, pageable, 0)
 
                 every {
