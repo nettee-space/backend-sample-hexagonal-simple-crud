@@ -17,7 +17,7 @@ import java.util.Objects;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "board")
-public class BoardEntityLong extends LongBaseTimeEntity {
+public class BoardEntity extends LongBaseTimeEntity {
     private String title;
 
     private String content;
@@ -26,7 +26,7 @@ public class BoardEntityLong extends LongBaseTimeEntity {
     private BoardStatus status;
 
     @Builder
-    public BoardEntityLong(String title, String content, BoardStatus status) {
+    public BoardEntity(String title, String content, BoardStatus status) {
         this.title = title;
         this.content = content;
         this.status = status;
