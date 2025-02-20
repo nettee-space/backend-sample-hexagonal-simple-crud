@@ -15,15 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 import java.util.Set;
-
-import static me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 public class BoardQueryApi {
+
     private final BoardReadUseCase boardReadUseCase;
     private final BoardReadByStatusesUseCase boardReadByStatusesUseCase;
 
@@ -31,7 +29,7 @@ public class BoardQueryApi {
 
     @GetMapping("/{boardId}")
     public BoardDetailResponse getBoard(@PathVariable("boardId") long boardId) {
-        var board = Optional.ofNullable(boardReadUseCase.getBoard(boardId)).orElseThrow(BOARD_NOT_FOUND::exception);
+        var board = boardReadUseCase.getBoard(boardId);
 
         return mapper.toDtoDetail(board);
     }

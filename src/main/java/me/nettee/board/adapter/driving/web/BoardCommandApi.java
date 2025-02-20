@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
-import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
-
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
@@ -31,6 +27,7 @@ public class BoardCommandApi {
     private final BoardCreateUseCase boardCreateUseCase;
     private final BoardUpdateUseCase boardUpdateUseCase;
     private final BoardDeleteUseCase boardDeleteUseCase;
+
     private final BoardDtoMapper mapper;
 
     @PostMapping
@@ -52,11 +49,9 @@ public class BoardCommandApi {
     ) {
         // Map to Domain
         var board = mapper.toDomain(id, boardUpdateCommand);
-        var updatedBoard = Optional.ofNullable(boardUpdateUseCase.updateBoard(board))
-                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         return BoardCommandResponse.builder()
-                .board(updatedBoard)
+                .board(boardUpdateUseCase.updateBoard(board))
                 .build();
     }
 
