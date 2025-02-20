@@ -13,7 +13,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.argThat
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -28,9 +27,8 @@ import org.springframework.test.web.servlet.get
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
-@ExtendWith(SpringExtension::class)
 @WebMvcTest(BoardQueryApi::class)
-@AutoConfigureMockMvc
+@ExtendWith(SpringExtension::class)
 class BoardQueryApiTest(
     @MockitoBean private val boardReadUseCase: BoardReadUseCase,
     @MockitoBean private val boardReadByStatusesUseCase: BoardReadByStatusesUseCase,
