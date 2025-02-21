@@ -1,13 +1,12 @@
 package me.nettee.board.application.port;
 
-import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.model.BoardQueryModel.BoardDetail;
-import me.nettee.board.application.model.BoardQueryModel.BoardSummary;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.Optional;
 import java.util.Set;
+import me.nettee.board.application.domain.type.BoardStatus;
+import me.nettee.board.application.model.BoardQueryModels.BoardDetail;
+import me.nettee.board.application.model.BoardQueryModels.BoardSummary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BoardQueryPort {
 
@@ -15,5 +14,6 @@ public interface BoardQueryPort {
 
     Page<BoardSummary> findAll(Pageable pageable);
 
-    Page<BoardSummary> findByStatusesList(Pageable pageable, Set<BoardStatus> statuses);
+    Page<BoardSummary> findByStatusesList(Set<BoardStatus> statuses, Pageable pageable);
 }
+    
