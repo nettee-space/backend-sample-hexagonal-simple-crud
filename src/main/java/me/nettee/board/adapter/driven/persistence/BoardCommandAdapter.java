@@ -37,7 +37,7 @@ public class BoardCommandAdapter implements BoardCommandPort {
             boardJpaRepository.flush();
             return boardEntityMapper.toDomain(newBoard);
         } catch (DataAccessException e) {
-            throw DEFAULT.defaultException();
+            throw DEFAULT.defaultException(e);
         }
     }
 

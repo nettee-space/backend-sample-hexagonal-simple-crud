@@ -53,7 +53,7 @@ public class BoardEntity extends BaseTimeEntity {
             buildMethodName = "updateStatus"
     )
     public void updateStatus(BoardEntityStatus status) {
-    Objects.requireNonNull(status, "status cannot be null");
+        Objects.requireNonNull(status, "status cannot be null");
         this.status = status;
     }
 }
