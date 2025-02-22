@@ -1,6 +1,7 @@
 package me.nettee.board.application.exception;
 
 import java.util.Map;
+import java.util.function.Supplier;
 import me.nettee.common.exeption.CustomException;
 import me.nettee.common.exeption.ErrorCode;
 
@@ -17,11 +18,19 @@ public class BoardCommandException extends CustomException {
         super(errorCode, cause);
     }
 
-    public BoardCommandException(ErrorCode errorCode, Map<String, Object> payload) {
+    public BoardCommandException(ErrorCode errorCode, Runnable runnable) {
+        super(errorCode, runnable);
+    }
+
+    public BoardCommandException(ErrorCode errorCode, Runnable runnable, Throwable cause) {
+        super(errorCode, runnable, cause);
+    }
+
+    public BoardCommandException(ErrorCode errorCode, Supplier<Map<String, Object>> payload) {
         super(errorCode, payload);
     }
 
-    public BoardCommandException(ErrorCode errorCode, Map<String, Object> payload, Throwable cause) {
+    public BoardCommandException(ErrorCode errorCode, Supplier<Map<String, Object>> payload, Throwable cause) {
         super(errorCode, payload, cause);
     }
 }

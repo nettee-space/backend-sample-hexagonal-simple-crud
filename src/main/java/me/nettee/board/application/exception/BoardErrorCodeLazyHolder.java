@@ -64,27 +64,21 @@ public class BoardErrorCodeLazyHolder implements ErrorCode {
 
     @Override
     public RuntimeException exception(Runnable runnable) {
-        if (runnable != null) {
-            runnable.run();
-        }
-        return new BoardCommandException(this);
+        return new BoardCommandException(this, runnable);
     }
 
     @Override
     public RuntimeException exception(Runnable runnable, Throwable cause) {
-        if (runnable != null) {
-            runnable.run();
-        }
-        return new BoardCommandException(this, cause);
+        return new BoardCommandException(this, runnable, cause);
     }
 
     @Override
-    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload) {
-        return new BoardCommandException(this, appendPayload.get());
+    public RuntimeException exception(Supplier<Map<String, Object>> payload) {
+        return new BoardCommandException(this, payload);
     }
 
     @Override
-    public RuntimeException exception(Supplier<Map<String, Object>> appendPayload, Throwable cause) {
-        return new BoardCommandException(this, appendPayload.get(), cause);
+    public RuntimeException exception(Supplier<Map<String, Object>> payload, Throwable cause) {
+        return new BoardCommandException(this, payload, cause);
     }
 }
