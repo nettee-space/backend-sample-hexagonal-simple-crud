@@ -1,3 +1,8 @@
+- [**Sample Code Registry**](https://github.com/nettee-space/backend-sample-code-registry)  
+  1. ⠀⠀ [**Layerd**](https://github.com/nettee-space/backend-sample-layered-simple-crud)  
+  2. ▶⠀ <ins>**Hexagonal**</ins> (Here)  
+  3. ⠀⠀ **Multi-Module Project** (Coming soon)
+
 # Introduction.
 
 이 샘플 프로젝트는 레이어드 아키텍처를 넘어 확장성과 유연성을 보장하고 DDD 철학에 걸맞는 헥사고날 아키텍처 기반으로 구현되었습니다.
