@@ -12,13 +12,17 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = exception.getErrorCode();
 
+        if (exception.getRunnable() != null) {
+            exception.getRunnable().run();
+        }
+
         var responseBody = ApiErrorResponse.builder()
                 .status(errorCode.httpStatus().value())
                 .code(errorCode.name())
                 .message(exception.getMessage()) // same to errorCode.message
-                .payLoad(exception.getPayload())
+                .payload(exception.getPayload().get())
                 .build();
-
+        
         return ResponseEntity
                 .status(errorCode.httpStatus())
                 .body(responseBody);
