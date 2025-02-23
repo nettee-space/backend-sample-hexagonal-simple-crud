@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
                 .status(errorCode.httpStatus().value())
                 .code(errorCode.name())
                 .message(exception.getMessage()) // same to errorCode.message
-                .payload(exception.getPayload())
+                .payload(exception.getPayload().get())
                 .build();
-
+        
         return ResponseEntity
                 .status(errorCode.httpStatus())
                 .body(responseBody);

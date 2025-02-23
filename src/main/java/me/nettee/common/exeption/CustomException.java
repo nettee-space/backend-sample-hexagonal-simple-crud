@@ -60,11 +60,7 @@ public class CustomException extends RuntimeException {
         return runnable;
     }
 
-    public Map<String, Object> getPayload() {
-        return payload.get();
-    }
-
-    public void run() {
-        runnable.run();
+    public Supplier<Map<String, Object>> getPayload() {
+        return payload;
     }
 }
