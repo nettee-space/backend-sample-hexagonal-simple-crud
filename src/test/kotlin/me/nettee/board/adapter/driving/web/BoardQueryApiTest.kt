@@ -44,8 +44,6 @@ class BoardQueryApiTest(
 
     lateinit var boardList: List<BoardSummary>
 
-
-
     "[GET]게시판 상세 조회" - {
         val mvcGet = fun(boardId: Long): ResultActionsDsl {
             return mvc.get("/api/v1/boards/$boardId") {
@@ -139,11 +137,8 @@ class BoardQueryApiTest(
             )
         }
 
-
         val jsonResult = objectMapper.writeValueAsString(boardDetailWithNull)
         val nonNullResponse = objectMapper.readValue(jsonResult, BoardDetail::class.java)
-
-
 
         `when`(boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
         `when`(boardReadUseCase.getBoard(2L)).thenAnswer { boardDetailWithNull }
@@ -161,7 +156,6 @@ class BoardQueryApiTest(
         `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
         `when`(boardDtoMapper.toDtoDetail(boardDetailWithNull)).thenReturn(BoardDetailResponse(nonNullResponse))
     }
-
 }) {
     @TestConfiguration
     class JacksonTestConfig {
@@ -178,6 +172,3 @@ class BoardQueryApiTest(
         }
     }
 }
-
-
-
