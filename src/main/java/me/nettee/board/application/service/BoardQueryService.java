@@ -3,9 +3,11 @@ package me.nettee.board.application.service;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.type.BoardStatus;
+
 import me.nettee.board.application.exception.BoardCommandException;
 import me.nettee.board.application.model.BoardQueryModels.BoardDetail;
 import me.nettee.board.application.model.BoardQueryModels.BoardSummary;
+
 import me.nettee.board.application.port.BoardQueryPort;
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase;
 import me.nettee.board.application.usecase.BoardReadUseCase;
