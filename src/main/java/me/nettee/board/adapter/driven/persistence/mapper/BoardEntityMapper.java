@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface BoardEntityMapper {
+
     Board toDomain(BoardEntity boardEntity);
 
     BoardEntity toEntity(Board board);

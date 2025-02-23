@@ -1,7 +1,6 @@
 package me.nettee.board.adapter.driven.persistence.entity.type;
-
 import me.nettee.board.application.domain.type.BoardStatus;
-
+import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
 public enum BoardEntityStatus {
     REMOVED(0),
     PENDING(10),
@@ -33,7 +32,7 @@ public enum BoardEntityStatus {
             case 10 -> PENDING;
             case 20 -> ACTIVE;
             case 30 -> SUSPENDED;
-            default -> throw new IllegalStateException("Unexpected value: " + value);
+            default -> throw DEFAULT.defaultException();
         };
     }
 }

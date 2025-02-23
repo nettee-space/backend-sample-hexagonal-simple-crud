@@ -1,13 +1,22 @@
 package me.nettee.board.application.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import me.nettee.board.application.domain.type.BoardStatus
+import me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND
+import me.nettee.board.application.exception.BoardCommandException
+import me.nettee.board.application.model.BoardQueryModels.BoardDetail
+import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.port.BoardQueryPort
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import java.time.Instant
 import java.util.*
-
 
 class BoardQueryServiceTest : FreeSpec({
 
@@ -15,82 +24,111 @@ class BoardQueryServiceTest : FreeSpec({
     val boardQueryService = BoardQueryService(boardQueryPort) // 주입
 
     "BoardQueryService" - {
-        "findById" - {
-            // TO-DO 테스트 코드 수정이 필요합니다.
-//            "존재하는 ID로 조회한다." {
-//                // given
-//                val boardId = 1L
-//                val expectedBoard = Board.builder().id(boardId).title("test title").build()
-//                every {
-//                    boardQueryPort.findById(boardId)
-//                } returns Optional.of(expectedBoard)
-//
-//                // when
-//                val result = boardQueryService.getBoard(boardId)
-//
-//                // then
-//                result shouldBe expectedBoard
-//                verify { boardQueryPort.findById(boardId) }
-//            }
-
-            "존재하지 않는 ID로 예외를 발생시킨다." {
+        "getBoard" - {
+            "board detail 조회 by board id" {
                 // given
                 val boardId = 1L
+                val now = Instant.now()
+
+                // 자바 record 이므로, 순서대로 인자 전달
+                val expectedDetail = BoardDetail(
+                        boardId,
+                        "Test Title",
+                        "Test Content",
+                        BoardStatus.ACTIVE,
+                        now,
+                        now
+                )
+
+                every {
+                    boardQueryPort.findById(boardId)
+                } returns Optional.of(expectedDetail)
+
+                // when
+                val result = boardQueryService.getBoard(boardId)
+
+                // then
+                result shouldBe expectedDetail
+                verify(exactly = 1) { boardQueryPort.findById(boardId) }
+            }
+
+            "board id에 해당하는 게시판이 없으면 예외 반환" {
+                // given
+                val boardId = 999L
                 every {
                     boardQueryPort.findById(boardId)
                 } returns Optional.empty()
 
-                // when
-                val result = runCatching {
-                    boardQueryService.getBoard(boardId) // Optional이 비어있을 때, orElseThrow()에서 예외가 발생한다.
+                // when & then
+                val exception = shouldThrow<BoardCommandException> {
+                    boardQueryService.getBoard(boardId)
                 }
+                exception.errorCode shouldBe BOARD_NOT_FOUND
 
-                // then
-                result.isFailure shouldBe true
-                verify { boardQueryPort.findById(boardId) }
+                verify(exactly = 1) { boardQueryPort.findById(boardId) }
             }
         }
 
         "findByStatuses" - {
-            // TO-DO 테스트 코드 수정이 필요합니다.
-//            "상태 목록으로 조회 시, 페이징 조회한다." {
-//                // given
-//                val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.SUSPENDED)
-//                val pageable = PageRequest.of(0, 10)
-//                val boards = listOf(
-//                    Board.builder().id(1L).title("Active Board").status(BoardStatus.ACTIVE).build(),
-//                    Board.builder().id(2L).title("Suspended Board").status(BoardStatus.SUSPENDED).build()
-//                )
-//                val expectedPage = PageImpl(boards, pageable, boards.size.toLong())
-//                every {
-//                    boardQueryPort.findByStatusesList(pageable, statuses)
-//                } returns expectedPage
-//
-//                // when
-//                val result = boardQueryService.findByStatuses(statuses, pageable)
-//
-//                // then
-//                result shouldBe expectedPage
-//                verify { boardQueryPort.findByStatusesList(pageable, statuses) }
-//            }
+            "BoardStatus로 조회" {
+                // given
+                val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.SUSPENDED)
+                val pageable = PageRequest.of(0, 10)
+                val now = Instant.now()
 
-//            "빈 상태 목록으로 조회 시, 빈 페이지를 조회한다." {
-//                // given
-//                val statuses = emptySet<BoardStatus>()
-//                val pageable = PageRequest.of(0, 10)
-//                val boards: List<Board> = emptyList()
-//                val expectedPage = PageImpl(boards, pageable, 0)
-//                every {
-//                    boardQueryPort.findByStatusesList(pageable, statuses)
-//                } returns expectedPage
-//
-//                // when
-//                val result = boardQueryService.findByStatuses(statuses, pageable)
-//
-//                // then
-//                result shouldBe expectedPage
-//                verify { boardQueryPort.findByStatusesList(pageable, statuses) }
-//            }
+                // 자바 record 이므로, 순서대로 인자 전달
+                val summaries = listOf(
+                        BoardSummary(
+                                1L,
+                                "Active Board",
+                                BoardStatus.ACTIVE,
+                                now,
+                                now
+                        ),
+                        BoardSummary(
+                                2L,
+                                "Suspended Board",
+                                BoardStatus.SUSPENDED,
+                                now,
+                                now
+                        )
+                )
+
+                val expectedPage: Page<BoardSummary> =
+                        PageImpl(summaries, pageable, summaries.size.toLong())
+
+                every {
+                    boardQueryPort.findByStatusesList(statuses, pageable)
+                } returns expectedPage
+
+                // when
+                val result = boardQueryService.findByStatuses(statuses, pageable)
+
+                // then
+                result shouldBe expectedPage
+                verify(exactly = 1) { boardQueryPort.findByStatusesList(statuses, pageable) }
+            }
+
+            "빈 상태 목록으로 조회하면 빈 페이지가 반환" {
+                // given
+                val statuses = emptySet<BoardStatus>()
+                val pageable = PageRequest.of(0, 10)
+
+                val emptySummaries = emptyList<BoardSummary>()
+                val expectedPage: Page<BoardSummary> =
+                        PageImpl(emptySummaries, pageable, 0)
+
+                every {
+                    boardQueryPort.findByStatusesList(statuses, pageable)
+                } returns expectedPage
+
+                // when
+                val result = boardQueryService.findByStatuses(statuses, pageable)
+
+                // then
+                result shouldBe expectedPage
+                verify(exactly = 1) { boardQueryPort.findByStatusesList(statuses, pageable) }
+            }
         }
     }
 })

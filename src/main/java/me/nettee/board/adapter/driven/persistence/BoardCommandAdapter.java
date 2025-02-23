@@ -1,17 +1,17 @@
 package me.nettee.board.adapter.driven.persistence;
 
+import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
+import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
+
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus;
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
 import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.port.BoardCommandPort;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
-import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public Optional<Board> findById(Long id) {
         var board = boardJpaRepository.findById(id)
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         return boardEntityMapper.toOptionalDomain(board);
     }
@@ -31,19 +31,19 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public Board create(Board board) {
         var boardEntity = boardEntityMapper.toEntity(board);
-
-        if(boardJpaRepository.existsById(boardEntity.getId())) {
-            // 이미 존재하는 게시판 입니다. 이라는 구체적인 에러 코드 추가가 필요해보임
-            throw DEFAULT.defaultException();
+        try {
+            var newBoard = boardJpaRepository.save(boardEntity);
+            boardJpaRepository.flush();
+            return boardEntityMapper.toDomain(newBoard);
+        } catch (DataAccessException e) {
+            throw DEFAULT.exception(e);
         }
-
-        return boardEntityMapper.toDomain(boardJpaRepository.save(boardEntity));
     }
 
     @Override
     public Board update(Board board) {
         var existBoard = boardJpaRepository.findById(board.getId())
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         existBoard.prepareUpdate()
                 .title(board.getTitle())
@@ -57,11 +57,11 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public void updateStatus(Long id, BoardStatus status) {
         var board = boardJpaRepository.findById(id)
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
-        board.prepareUpdate()
+        board.prepareUpdateStatus()
                 .status(BoardEntityStatus.valueOf(status))
-                .update();
+                .updateStatus();
 
         boardJpaRepository.save(board);
     }
