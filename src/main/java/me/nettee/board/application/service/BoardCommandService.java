@@ -34,13 +34,11 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
         // 현재 updateStatus로 REMOVE 상태로 변경
         boardCommandPort.updateStatus(id, BoardStatus.REMOVED);
 
-        // Hard Delete 됬는지 확인
+        // Hard Delete 됬는지 확인 - 제외 할 가능성 있음
         Board board = boardCommandPort.findById(id)
                 .orElseThrow(BOARD_NOT_FOUND::defaultException);
 
-        // REMOVED 상태 확인 (null-safe)
-        if (!Objects.equals(board.getStatus(), BoardStatus.REMOVED)) {
-            throw new BoardCommandException(DEFAULT);
-        }
+        assert board.getStatus() == BoardStatus.REMOVED : DEFAULT;
+
     }
 }

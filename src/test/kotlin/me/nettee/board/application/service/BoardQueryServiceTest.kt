@@ -24,9 +24,7 @@ class BoardQueryServiceTest : FreeSpec({
     val boardQueryService = BoardQueryService(boardQueryPort) // 주입
 
     "BoardQueryService" - {
-
         "getBoard" - {
-
             "board detail 조회 by board id" {
                 // given
                 val boardId = 1L
@@ -72,7 +70,6 @@ class BoardQueryServiceTest : FreeSpec({
         }
 
         "findByStatuses" - {
-
             "BoardStatus로 조회" {
                 // given
                 val statuses = setOf(BoardStatus.ACTIVE, BoardStatus.SUSPENDED)
@@ -134,5 +131,4 @@ class BoardQueryServiceTest : FreeSpec({
             }
         }
     }
-
 })
