@@ -1,5 +1,9 @@
 package me.nettee.board.adapter.driven.persistence;
 
+import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
+import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
+
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus;
 import me.nettee.board.adapter.driven.persistence.mapper.BoardEntityMapper;
@@ -8,11 +12,6 @@ import me.nettee.board.application.domain.type.BoardStatus;
 import me.nettee.board.application.port.BoardCommandPort;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
-import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public Optional<Board> findById(Long id) {
         var board = boardJpaRepository.findById(id)
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         return boardEntityMapper.toOptionalDomain(board);
     }
@@ -37,14 +36,14 @@ public class BoardCommandAdapter implements BoardCommandPort {
             boardJpaRepository.flush();
             return boardEntityMapper.toDomain(newBoard);
         } catch (DataAccessException e) {
-            throw DEFAULT.defaultException(e);
+            throw DEFAULT.exception(e);
         }
     }
 
     @Override
     public Board update(Board board) {
         var existBoard = boardJpaRepository.findById(board.getId())
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         existBoard.prepareUpdate()
                 .title(board.getTitle())
@@ -58,7 +57,7 @@ public class BoardCommandAdapter implements BoardCommandPort {
     @Override
     public void updateStatus(Long id, BoardStatus status) {
         var board = boardJpaRepository.findById(id)
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         board.prepareUpdateStatus()
                 .status(BoardEntityStatus.valueOf(status))

@@ -9,8 +9,8 @@ import io.mockk.verify
 import me.nettee.board.application.domain.type.BoardStatus
 import me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND
 import me.nettee.board.application.exception.BoardCommandException
-import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.model.BoardQueryModels.BoardDetail
+import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.port.BoardQueryPort
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl

@@ -1,19 +1,16 @@
 package me.nettee.board.application.service;
 
+import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
+import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
+
 import lombok.RequiredArgsConstructor;
 import me.nettee.board.application.domain.Board;
 import me.nettee.board.application.domain.type.BoardStatus;
-import me.nettee.board.application.exception.BoardCommandException;
 import me.nettee.board.application.port.BoardCommandPort;
 import me.nettee.board.application.usecase.BoardCreateUseCase;
 import me.nettee.board.application.usecase.BoardDeleteUseCase;
 import me.nettee.board.application.usecase.BoardUpdateUseCase;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-
-import static me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND;
-import static me.nettee.board.application.exception.BoardCommandErrorCode.DEFAULT;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +33,7 @@ public class BoardCommandService implements BoardCreateUseCase, BoardUpdateUseCa
 
         // Hard Delete 됬는지 확인 - 제외 할 가능성 있음
         Board board = boardCommandPort.findById(id)
-                .orElseThrow(BOARD_NOT_FOUND::defaultException);
+                .orElseThrow(BOARD_NOT_FOUND::exception);
 
         assert board.getStatus() == BoardStatus.REMOVED : DEFAULT;
 

@@ -27,7 +27,7 @@ public enum BoardEntityStatus {
     }
 
     public static BoardEntityStatus valueOf(int value) {
-        return switch (value){
+        return switch (value) {
             case 0 -> REMOVED;
             case 10 -> PENDING;
             case 20 -> ACTIVE;
