@@ -2,8 +2,10 @@ package me.nettee.board.adapter.driven.persistence;
 
 import static me.nettee.board.adapter.driven.persistence.entity.QBoardEntity.boardEntity;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import me.nettee.board.adapter.driven.persistence.entity.BoardEntity;
 import me.nettee.board.adapter.driven.persistence.entity.type.BoardEntityStatus;
@@ -20,8 +22,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class BoardQueryAdapter extends QuerydslRepositorySupport implements BoardQueryPort {
-
     private final BoardEntityMapper boardEntityMapper;
+    private Map<Set<BoardStatus>, Set<BoardEntityStatus>> statusMap = new ConcurrentHashMap<>();
 
     public BoardQueryAdapter(
         BoardEntityMapper boardEntityMapper) {
@@ -77,9 +79,12 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
     @Override
     public Page<BoardSummary> findByStatusesList(Set<BoardStatus> statuses, Pageable pageable) {
         // 기본 쿼리 생성
-        var boardEntityStatuses = statuses.stream().map(
-            status -> BoardEntityStatus.valueOf(status)
-        ).collect(Collectors.toSet());
+        var boardEntityStatuses = statusMap.computeIfAbsent(
+            statuses,
+            (ignore) -> statuses.stream()
+                    .map(BoardEntityStatus::valueOf)
+                    .collect(Collectors.toSet())
+        );
 
         var query = getQuerydsl().createQuery()
                 .select(boardEntity)
@@ -87,13 +92,11 @@ public class BoardQueryAdapter extends QuerydslRepositorySupport implements Boar
                 .where(boardEntity.status.in(boardEntityStatuses));
 
         // pageable 정렬 조건 적용
-        pageable.getSort().forEach(order -> {
-            if (order.isAscending()) {
-                query.orderBy(boardEntity.createdAt.asc()); // createdAt 필드를 기준으로 오름차순 정렬
-            } else {
-                query.orderBy(boardEntity.createdAt.desc()); // createdAt 필드를 기준으로 내림차순 정렬
-            }
-        });
+        pageable.getSort().forEach(order ->
+                query.orderBy(order.isAscending() ?
+                    boardEntity.createdAt.asc() :
+                    boardEntity.createdAt.desc())
+        );
 
         var result = query
                 .offset(pageable.getOffset()) // 현재 페이지의 오프셋 설정
