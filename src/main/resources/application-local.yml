@@ -5,10 +5,6 @@ spring:
     username: ${DEMO_POSTGRESQL_USERNAME:root}
     password: ${DEMO_POSTGRESQL_PASSWORD:root}
 
-  jackson:
-    serialization:
-      wrap-root-value: true
-
 logging:
   level:
     root: debug
