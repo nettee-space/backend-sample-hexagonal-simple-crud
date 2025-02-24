@@ -19,7 +19,6 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-
   flyway:
     baseline-on-migrate: false
     enabled: false

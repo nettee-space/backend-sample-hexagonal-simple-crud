@@ -15,17 +15,17 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActionsDsl
+import org.springframework.test.web.servlet.request
 
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(BoardCommandApi::class)
-@AutoConfigureMockMvc
 class BoardCommandApiTest(
     @Autowired private val mvc: MockMvc,
     @Autowired private val objectMapper: ObjectMapper,
