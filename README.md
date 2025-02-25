@@ -92,11 +92,13 @@ Adapter는 Application 계층에 정의된 port를 구현합니다.
 # Commit Message
 
 커밋 메시지의 제1 규칙은 '알아볼 수 있는 메시지 전달'입니다.  
-커밋 양식의 준수도 좋지만, 양식의 각 바운더리는 차근차근 공감대가 모이는 방향으로 맞추어 봅니다.
+보편적인 앵귤러 커밋 메시지 컨벤션을 따르면서, 각 포맷의 바운더리와 표현 수준은 팀에 맞게 차근차근 조정해 가면 좋겠습니다.
 
-## Basic Commit Message Type
+## Basic Commit Message Format
 
-커밋 메시지의 첫 단어는 작업의 목적을 명확히 하기 위해 커밋 타입으로 시작합니다. 
+커밋 메시지의 첫 단어는 작업의 목적을 명확히 하기 위해 커밋 타입으로 시작합니다.  
+
+> **type**(scope): subject in lowercase  
 
 아래의 타입을 실습으로 사용해 보시면 좋습니다.
 
@@ -107,3 +109,8 @@ Adapter는 Application 계층에 정의된 port를 구현합니다.
 - **test**: 테스트 코드 추가 또는 수정
 - **chore**: 코드의 구조나 동작에 영향을 주지 않는 기타 작업
 - **build**: 빌드 관련 작업, 패키지 매니저 설정 등
+
+# Contact.
+
+- [:octocat: Merge Simpson](https://github.com/merge-simpson)
+- [:octocat: Silberbullet](https://github.com/silberbullet) (No silver bullet)
