@@ -50,7 +50,7 @@ Adapter는 Application 계층에 정의된 port를 구현합니다.
 개발자들은 다음과 같은 Branch Rule을 꼭 숙지하고 준수해 주시기 바랍니다. (간소화된 브랜치 운영)
 
 - **main 브랜치는 읽기 전용 입니다.**
-  - main 브랜치는 관리자(`@merge-simpson`, `@silberbullet`)만 force push가 가능합니다.
+  - main 브랜치는 관리자([`@merge-simpson`](https://github.com/merge-simpson), [`@silberbullet`](https://github.com/silberbullet))만 force push가 가능합니다.
 - **feature 브랜치**: 모든 변경 사항은 <ins>feature 브랜치</ins>를 생성 후, main 브랜치로 병합해야 합니다.
   - `feature/기능명` 양식으로 명명하며, 영문 소문자, 숫자 및 하이픈(케밥 케이스)를 사용합니다. (추가적인 슬래시를 사용하지 않습니다.)
     
@@ -76,7 +76,7 @@ Adapter는 Application 계층에 정의된 port를 구현합니다.
   
 - **주요 브랜치에 병합 전 Pull Request(PR)는 필수입니다.**
   - Pull Request를 생성할 때, 최소 2명의 reviewer를 지정해야 합니다.
-  - 관리자(@merge-simpson, @silberbullet)는 리뷰 없이 병합이 가능합니다.
+  - 관리자([@merge-simpson](https://github.com/merge-simpson), [@silberbullet](https://github.com/silberbullet))는 리뷰 없이 병합이 가능합니다.
   - **코드에 대한 모든 논의(conversations)가 해결(resolved)되지 않은 상태에서는 Pull Request를 병합할 수 없습니다.**
     <details>
     <summary>conversations 예시 보기</summary>
