@@ -7,8 +7,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import me.nettee.board.application.domain.type.BoardStatus
-import me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND
-import me.nettee.board.application.exception.BoardCommandException
+import me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_NOT_FOUND
+import me.nettee.board.application.exception.BoardQueryException
 import me.nettee.board.application.model.BoardQueryModels.BoardDetail
 import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.port.BoardQueryPort
@@ -60,7 +60,7 @@ class BoardQueryServiceTest : FreeSpec({
                 } returns Optional.empty()
 
                 // when & then
-                val exception = shouldThrow<BoardCommandException> {
+                val exception = shouldThrow<BoardQueryException> {
                     boardQueryService.getBoard(boardId)
                 }
                 exception.errorCode shouldBe BOARD_NOT_FOUND
@@ -87,7 +87,7 @@ class BoardQueryServiceTest : FreeSpec({
                         ),
                         BoardSummary(
                                 2L,
-                                "Suspended Board",
+                                null,
                                 BoardStatus.SUSPENDED,
                                 now,
                                 now
@@ -129,6 +129,8 @@ class BoardQueryServiceTest : FreeSpec({
                 result shouldBe expectedPage
                 verify(exactly = 1) { boardQueryPort.findByStatusesList(statuses, pageable) }
             }
+
+
         }
     }
 })
