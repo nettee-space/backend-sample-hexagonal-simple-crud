@@ -28,6 +28,14 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
 
     @Override
     public Page<BoardSummary> findByStatuses(Set<BoardStatus> statuses, Pageable pageable) {
-        return boardQueryPort.findByStatusesList(statuses, pageable);
+        var boardPage = boardQueryPort.findByStatusesList(statuses, pageable);
+
+        var filterBoardPage = boardPage.map(board ->
+                board.status() == BoardStatus.SUSPENDED
+                        ? new BoardSummary(board.id(), null, board.status(), board.createdAt(), board.updatedAt())
+                        : board
+        );
+
+        return filterBoardPage;
     }
 }
