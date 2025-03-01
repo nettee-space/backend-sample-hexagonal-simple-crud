@@ -107,11 +107,6 @@ class BoardQueryApiTest(
     ) -> Page<BoardSummary>
 
     beforeSpec {
-        val objectMapper = ObjectMapper().apply {
-            registerModule(JavaTimeModule())
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-
         boardReadSummaryModelPage = { boardList, pageable, boardStatus ->
             val filteredBoards = boardList
                 .takeIf { it.isNotEmpty() }
@@ -137,9 +132,6 @@ class BoardQueryApiTest(
             )
         }
 
-        val jsonResult = objectMapper.writeValueAsString(boardDetailWithNull)
-        val nonNullResponse = objectMapper.readValue(jsonResult, BoardDetail::class.java)
-
         `when`(boardReadUseCase.getBoard(1L)).thenAnswer { boardDetail }
         `when`(boardReadUseCase.getBoard(2L)).thenAnswer { boardDetailWithNull }
         `when`(boardReadUseCase.getBoard(argThat { it != 1L && it != 2L })).thenThrow(ResponseStatusException(HttpStatus.NOT_FOUND))
@@ -154,7 +146,7 @@ class BoardQueryApiTest(
             boardReadSummaryModelPage(boardList, pageable, statuses)
         }
         `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
-        `when`(boardDtoMapper.toDtoDetail(boardDetailWithNull)).thenReturn(BoardDetailResponse(nonNullResponse))
+        `when`(boardDtoMapper.toDtoDetail(boardDetailWithNull)).thenReturn(BoardDetailResponse(boardDetailWithNull))
     }
 }) {
     @TestConfiguration
