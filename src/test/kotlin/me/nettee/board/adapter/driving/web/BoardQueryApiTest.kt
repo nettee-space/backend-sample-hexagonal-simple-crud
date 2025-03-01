@@ -11,6 +11,7 @@ import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.model.BoardQueryModels.BoardDetail
 import me.nettee.board.application.usecase.BoardReadByStatusesUseCase
 import me.nettee.board.application.usecase.BoardReadUseCase
+import me.nettee.core.config.JacksonTestConfig
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.argThat
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -35,6 +37,7 @@ import java.time.Instant
 
 @WebMvcTest(BoardQueryApi::class)
 @ExtendWith(SpringExtension::class)
+@Import(JacksonTestConfig::class)
 class BoardQueryApiTest(
     @MockitoBean private val boardReadUseCase: BoardReadUseCase,
     @MockitoBean private val boardReadByStatusesUseCase: BoardReadByStatusesUseCase,
@@ -148,19 +151,4 @@ class BoardQueryApiTest(
         `when`(boardDtoMapper.toDtoDetail(boardDetail)).thenReturn(BoardDetailResponse(boardDetail))
         `when`(boardDtoMapper.toDtoDetail(boardDetailWithNull)).thenReturn(BoardDetailResponse(boardDetailWithNull))
     }
-}) {
-    @TestConfiguration
-    class JacksonTestConfig {
-        @Bean
-        fun objectMapper(): ObjectMapper {
-            return ObjectMapper()
-                .registerModule(JavaTimeModule())
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-
-        @Bean
-        fun mappingJackson2HttpMessageConverter(objectMapper: ObjectMapper): MappingJackson2HttpMessageConverter {
-            return MappingJackson2HttpMessageConverter(objectMapper)
-        }
-    }
-}
+})
