@@ -3,12 +3,14 @@ package me.nettee.board.application.service
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import me.nettee.board.application.domain.type.BoardStatus
-import me.nettee.board.application.exception.BoardCommandErrorCode.BOARD_NOT_FOUND
-import me.nettee.board.application.exception.BoardCommandException
+import me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_FORBIDDEN
+import me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_NOT_FOUND
+import me.nettee.board.application.exception.BoardQueryException
 import me.nettee.board.application.model.BoardQueryModels.BoardDetail
 import me.nettee.board.application.model.BoardQueryModels.BoardSummary
 import me.nettee.board.application.port.BoardQueryPort
@@ -22,6 +24,10 @@ class BoardQueryServiceTest : FreeSpec({
 
     val boardQueryPort = mockk<BoardQueryPort>() // mocking
     val boardQueryService = BoardQueryService(boardQueryPort) // 주입
+
+    beforeTest {
+        clearMocks(boardQueryPort)
+    }
 
     "BoardQueryService" - {
         "getBoard" - {
@@ -52,6 +58,35 @@ class BoardQueryServiceTest : FreeSpec({
                 verify(exactly = 1) { boardQueryPort.findById(boardId) }
             }
 
+            "[예외] boardDetail status가 suspended 일 때 Exception 발생" {
+                // given
+                val boardId = 1L
+                val now = Instant.now()
+
+                val expectedDetail = BoardDetail(
+                    boardId,
+                    "Test Title",
+                    "test Content",
+                    BoardStatus.SUSPENDED,
+                    now,
+                    now
+                )
+
+                every {
+                    boardQueryPort.findById(boardId)
+                } returns Optional.of(expectedDetail)
+
+                // when
+                val exception = shouldThrow<BoardQueryException> {
+                    boardQueryService.getBoard(boardId)
+                }
+
+                // then
+                exception.errorCode shouldBe BOARD_FORBIDDEN
+
+                verify(exactly = 1) { boardQueryPort.findById(boardId) }
+            }
+
             "board id에 해당하는 게시판이 없으면 예외 반환" {
                 // given
                 val boardId = 999L
@@ -60,7 +95,7 @@ class BoardQueryServiceTest : FreeSpec({
                 } returns Optional.empty()
 
                 // when & then
-                val exception = shouldThrow<BoardCommandException> {
+                val exception = shouldThrow<BoardQueryException> {
                     boardQueryService.getBoard(boardId)
                 }
                 exception.errorCode shouldBe BOARD_NOT_FOUND
@@ -87,7 +122,7 @@ class BoardQueryServiceTest : FreeSpec({
                         ),
                         BoardSummary(
                                 2L,
-                                "Suspended Board",
+                                null,
                                 BoardStatus.SUSPENDED,
                                 now,
                                 now
