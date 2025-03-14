@@ -10,10 +10,10 @@ public record ApiErrorResponse(
         String message,
         Map<String, Object> payload
 ) {
-        public ApiErrorResponse {
-                if (payload != null && payload.isEmpty()) {
-                        payload = null;
-                }
+    public ApiErrorResponse {
+        if (payload != null && payload.isEmpty()) {
+            payload = null;
         }
+    }
 }
 
