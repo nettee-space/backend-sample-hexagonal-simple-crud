@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import static me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_FORBIDDEN;
 import static me.nettee.board.application.exception.BoardQueryErrorCode.BOARD_NOT_FOUND;
 
 @Service
@@ -22,12 +23,26 @@ public class BoardQueryService implements BoardReadUseCase, BoardReadByStatusesU
 
     @Override
     public BoardDetail getBoard(Long id) {
-        return boardQueryPort.findById(id)
+        BoardDetail boardDetail =  boardQueryPort.findById(id)
                 .orElseThrow(BOARD_NOT_FOUND::exception);
+
+        if (boardDetail.status() == BoardStatus.SUSPENDED) {
+            throw BOARD_FORBIDDEN.exception();
+        }
+
+        return boardDetail;
     }
 
     @Override
     public Page<BoardSummary> findByStatuses(Set<BoardStatus> statuses, Pageable pageable) {
-        return boardQueryPort.findByStatusesList(statuses, pageable);
+        var boardPage = boardQueryPort.findByStatusesList(statuses, pageable);
+
+        var filterBoardPage = boardPage.map(board ->
+                board.status() == BoardStatus.SUSPENDED
+                        ? new BoardSummary(board.id(), null, board.status(), board.createdAt(), board.updatedAt())
+                        : board
+        );
+
+        return filterBoardPage;
     }
 }
