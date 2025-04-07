@@ -1,7 +1,7 @@
 - [**Sample Code Registry**](https://github.com/nettee-space/backend-sample-code-registry)  
   1. ⠀⠀ [**Layerd**](https://github.com/nettee-space/backend-sample-layered-simple-crud)  
   2. ▶⠀ <ins>**Hexagonal**</ins> (Here)  
-  3. ⠀⠀ **Multi-Module Project** (Coming soon)
+  3. ⠀⠀ [**Multi-Module Project**](https://github.com/nettee-space/backend-sample-multi-module)
 
 # Introduction.
 
